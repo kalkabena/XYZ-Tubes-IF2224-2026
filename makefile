@@ -1,13 +1,17 @@
-CXX      := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Isrc/include
-BIN_DIR  := bin
-TARGET   := $(BIN_DIR)/compiler
-SRC_DIR  := src
-OBJ_DIR  := obj
+CXX         := g++
+CXXFLAGS    := -std=c++17 -Wall -Wextra -Iinclude
+BIN_DIR     := bin
+TARGET      := $(BIN_DIR)/compiler
+SRC_DIR     := src
+OBJ_DIR     := obj
 
-# This wildcard automatically grabs compiler.cpp, lexer.cpp, etc.
-SRCS     := $(wildcard $(SRC_DIR)/*.cpp)
-OBJS     := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+# The output file path located in the test folder
+OUTPUT_FILE := test/lexer_output.txt
+
+SRCS        := $(wildcard $(SRC_DIR)/*.cpp)
+OBJS        := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+
+all: $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)
@@ -24,7 +28,8 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
+# Clean now explicitly removes the output from the test folder
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) compiler
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(OUTPUT_FILE)
 
 .PHONY: all clean run

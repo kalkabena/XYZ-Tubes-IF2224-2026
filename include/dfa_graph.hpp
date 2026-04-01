@@ -68,4 +68,11 @@ public:
             cout << log << "\n";
         }
     }
+    void printGraph(std::ostream& out) const {
+        if (!debug || transitionHistory.empty()) return;
+        out << "\n--- DFA Transition History ---\n";
+        for (const std::string& log : transitionHistory) {
+            out << log << "\n";
+        }
+    }
 };

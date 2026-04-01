@@ -1,0 +1,249 @@
+programsy
+ident(Hello)
+semicolon
+varsy
+ident(a)
+comma
+ident(b)
+comma
+ident(i)
+colon
+ident(integer)
+semicolon
+functionsy
+ident(AddTen)
+lparent
+ident(x)
+colon
+ident(integer)
+rparent
+colon
+ident(integer)
+semicolon
+beginsy
+ident(AddTen)
+becomes
+ident(x)
+plus
+intcon(10)
+semicolon
+endsy
+semicolon
+beginsy
+ident(a)
+becomes
+intcon(5)
+semicolon
+ident(b)
+becomes
+ident(AddTen)
+lparent
+ident(a)
+rparent
+semicolon
+ident(writeln)
+lparent
+string('Result = ')
+comma
+ident(b)
+rparent
+semicolon
+forsy
+ident(i)
+becomes
+intcon(1)
+tosy
+intcon(5)
+dosy
+beginsy
+ident(writeln)
+lparent
+string('Loop = ')
+comma
+ident(i)
+rparent
+semicolon
+endsy
+semicolon
+endsy
+period
+
+--- DFA Transition History ---
+p => State 1
+r => State 1
+o => State 1
+g => State 1
+r => State 1
+a => State 1
+m => State 1
+H => State 1
+e => State 1
+l => State 1
+l => State 1
+o => State 1
+; => State 20
+v => State 1
+a => State 1
+r => State 1
+a => State 1
+, => State 22
+b => State 1
+, => State 22
+i => State 1
+: => State 10 [Goten: Colon]
+i => State 1
+n => State 1
+t => State 1
+e => State 1
+g => State 1
+e => State 1
+r => State 1
+; => State 20
+f => State 1
+u => State 1
+n => State 1
+c => State 1
+t => State 1
+i => State 1
+o => State 1
+n => State 1
+A => State 1
+d => State 1
+d => State 1
+T => State 1
+e => State 1
+n => State 1
+( => State 26
+x => State 1
+: => State 10 [Goten: Colon]
+i => State 1
+n => State 1
+t => State 1
+e => State 1
+g => State 1
+e => State 1
+r => State 1
+) => State 27
+: => State 10 [Goten: Colon]
+i => State 1
+n => State 1
+t => State 1
+e => State 1
+g => State 1
+e => State 1
+r => State 1
+; => State 20
+b => State 1
+e => State 1
+g => State 1
+i => State 1
+n => State 1
+A => State 1
+d => State 1
+d => State 1
+T => State 1
+e => State 1
+n => State 1
+: => State 10 [Goten: Colon]
+= => State 11 [Goten: Becomes]
+x => State 1
++ => State 30
+1 => State 3
+0 => State 3
+; => State 20
+e => State 1
+n => State 1
+d => State 1
+; => State 20
+b => State 1
+e => State 1
+g => State 1
+i => State 1
+n => State 1
+a => State 1
+: => State 10 [Goten: Colon]
+= => State 11 [Goten: Becomes]
+5 => State 3
+; => State 20
+b => State 1
+: => State 10 [Goten: Colon]
+= => State 11 [Goten: Becomes]
+A => State 1
+d => State 1
+d => State 1
+T => State 1
+e => State 1
+n => State 1
+( => State 26
+a => State 1
+) => State 27
+; => State 20
+w => State 1
+r => State 1
+i => State 1
+t => State 1
+e => State 1
+l => State 1
+n => State 1
+( => State 26
+' => State 21
+R => State 21
+e => State 21
+s => State 21
+u => State 21
+l => State 21
+t => State 21
+  => State 21
+= => State 21
+  => State 21
+' => State 21
+, => State 22
+b => State 1
+) => State 27
+; => State 20
+f => State 1
+o => State 1
+r => State 1
+i => State 1
+: => State 10 [Goten: Colon]
+= => State 11 [Goten: Becomes]
+1 => State 3
+t => State 1
+o => State 1
+5 => State 3
+d => State 1
+o => State 1
+b => State 1
+e => State 1
+g => State 1
+i => State 1
+n => State 1
+w => State 1
+r => State 1
+i => State 1
+t => State 1
+e => State 1
+l => State 1
+n => State 1
+( => State 26
+' => State 21
+L => State 21
+o => State 21
+o => State 21
+p => State 21
+  => State 21
+= => State 21
+  => State 21
+' => State 21
+, => State 22
+i => State 1
+) => State 27
+; => State 20
+e => State 1
+n => State 1
+d => State 1
+; => State 20
+e => State 1
+n => State 1
+d => State 1
+. => State 40

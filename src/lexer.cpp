@@ -32,8 +32,8 @@ Lexer::Lexer(const string& src) : source(src), pos(0), dfa(true) {
     keywordMap["then"] = thensy;
 }
 
-void Lexer::printDFA_Graph() {
-    dfa.printGraph();
+void Lexer::printDFA_Graph(std::ostream& out) {
+    dfa.printGraph(out);
 }
 
 Token Lexer::getNextToken() {
@@ -44,7 +44,6 @@ Token Lexer::getNextToken() {
     dfa.reset(); 
     char current = source[pos];
 
-    // Identifiers and Keywords
     if (isalpha(current)) {
         string buffer = "";
         

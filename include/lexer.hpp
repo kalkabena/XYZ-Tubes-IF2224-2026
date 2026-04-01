@@ -13,7 +13,7 @@ private:
 
 public:
     Lexer(const std::string& src);
-    void printDFA_Graph();
+    void printDFA_Graph(std::ostream& out);
     Token getNextToken();
 };
 
