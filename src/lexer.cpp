@@ -1,270 +1,283 @@
-#include <iostream>
-#include <fstream>
-#include <array>
-#include <string>
-#include <utility> //std::pair
-#include <cctype> //std::tolower
+#include "lexer.hpp"
 
-enum class State { Esc, StrChar, Comment, Word, Symbol };
+using namespace std;
 
-const std::array<std::pair<std::string, std::string>, 27> inwords = {{
-	{"not", "notsy"},
-	{"div", "idiv"},
-	{"mod", "imod"},
-	{"and", "andsy"},
-	{"or", "orsy"},
-	{"const", "constsy"},
-	{"type", "typesy"},
-	{"var", "varsy"},
-	{"function", "functionsy"},
-	{"procedure", "proceduresy"},
-	{"array", "arraysy"},
-	{"record", "recordsy"},
-	{"program", "programsy"},
-	{"begin", "beginsy"},
-	{"if", "ifsy"},
-	{"case", "casesy"},
-	{"repeat", "repeatsy"},
-	{"while", "whilesy"},
-	{"for", "forsy"},
-	{"end", "endsy"},
-	{"else", "elsesy"},
-	{"until", "untilsy"},
-	{"of", "ofsy"},
-	{"do", "dosy"},
-	{"to", "tosy"},
-	{"downto", "downtosy"},
-	{"then", "thensy"}
-}};
-
-const std::array<std::pair<std::string, std::string>, 19> insymbols = {{
-	{"==", "eql"},
-	{"<>", "neq"},
-	{">=", "geq"},
-	{"<=", "leq"},
-	{":=", "becomes"},
-	{"+", "plus"},
-	{"-", "minus"},
-	{"*", "times"},
-	{"/", "rdiv"},
-	{">", "gtr"},
-	{"<", "lss"},
-	{"(", "lparent"},
-	{")", "rparent"},
-	{"[", "lbrack"},
-	{"]", "rbrack"},
-	{",", "comma"},
-	{";", "semicolon"},
-	{".", "period"},
-	{":", "colon"}
-}};
-
-bool is_word(char c) {
-	if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-		return true;
-	}
-	return false;
+Lexer::Lexer(const string& src) : source(src), pos(0), dfa(true) {
+    keywordMap["not"] = notsy;
+    keywordMap["div"] = idiv;
+    keywordMap["mod"] = imod;
+    keywordMap["and"] = andsy;
+    keywordMap["or"] = orsy;
+    keywordMap["const"] = constsy;
+    keywordMap["type"] = typesy;
+    keywordMap["var"] = varsy;
+    keywordMap["function"] = functionsy;
+    keywordMap["procedure"] = proceduresy;
+    keywordMap["array"] = arraysy;
+    keywordMap["record"] = recordsy;
+    keywordMap["program"] = programsy;
+    keywordMap["begin"] = beginsy;
+    keywordMap["if"] = ifsy;
+    keywordMap["case"] = casesy;
+    keywordMap["repeat"] = repeatsy;
+    keywordMap["while"] = whilesy;
+    keywordMap["for"] = forsy;
+    keywordMap["end"] = endsy;
+    keywordMap["else"] = elsesy;
+    keywordMap["until"] = untilsy;
+    keywordMap["of"] = ofsy;
+    keywordMap["do"] = dosy;
+    keywordMap["to"] = tosy;
+    keywordMap["downto"] = downtosy;
+    keywordMap["then"] = thensy;
 }
 
-bool is_digit(char c) {
-	if (c >= '0' && c <= '9') {
-		return true;
-	}
-	return false;
+void Lexer::printDFA_Graph() {
+    dfa.printGraph();
 }
 
-void print_word(std::ofstream& output, std::string& token) {
-	if (!output.is_open()) {
-        std::cerr << "Error opening output file!" << std::endl;
-        return;
-    }
-	
-	if (token.empty()) {
-		std::cerr << "Error: token is empty!" << std::endl;
-        return;
-	}
-	
-	bool is_int = true;
-	
-	for (char c : token) {
-		if (!is_digit(c)) is_int = false;
-	}
-	
-	if (is_int == true) {
-		output << "intcon(" << token << ")" << std::endl;
-		token.clear();
-		return;
-	}
-	
-	bool is_real = true;
-	
-	for (char c : token) {
-		if (!is_digit(c) && c != '.') is_real = false;
-	}
-	
-	if (is_real == true) {
-		output << "realcon(" << token << ")" << std::endl;
-		token.clear();
-		return;
-	}
-	
-	for (char& c : token) {
-        c = std::tolower(static_cast<unsigned char>(c));
-    }
-	
-	for (const std::pair<std::string, std::string>& intoken : inwords) {
-		if (token == intoken.first) {
-			output << intoken.second << std::endl;
-			token.clear();
-			return;
-		}
-	}
-	output << "ident(" << token << ")" << std::endl;
-	token.clear();
-}
+Token Lexer::getNextToken() {
+    while (pos < source.length() && std::isspace(source[pos])) pos++;
+    
+    if (pos >= source.length()) return {eof_tok, "EOF"};
 
-void print_symbol(std::ofstream& output, std::string& token) {
-	if (!output.is_open()) {
-        std::cerr << "Error opening output file!" << std::endl;
-        return;
-    }
-	if (token.empty()) {
-		std::cerr << "Error: token is empty!" << std::endl;
-        return;
-	}
-	
-	int subsize = token.size();
-	
-	while (subsize > 0) {
-		for (const std::pair<std::string, std::string>& intoken : insymbols) {
-			if (token.substr(0, subsize) == intoken.first) {
-				output << intoken.second << std::endl;
-				token = token.substr(subsize, token.size() - subsize);
-				return;
-			}
-		}
-		subsize--;
-	}
-	std::cerr << "Error: Invalid symbol!" << std::endl;
-	token.clear();
-}
+    dfa.reset(); 
+    char current = source[pos];
 
-int main() {
-	std::string input_file_path;
-    std::ifstream input_file;
-
-    while (!input_file.is_open()) {
-		std::cout << "Enter absolute input_file path: ";
-		std::getline(std::cin, input_file_path);
-		if (input_file_path == "q" || input_file_path == "Q") return 0;
-		
-		if (!input_file_path.empty() && input_file_path.front() == '"' && input_file_path.back() == '"') {
-            input_file_path = input_file_path.substr(1, input_file_path.size() - 1);
+    // Identifiers and Keywords
+    if (isalpha(current)) {
+        string buffer = "";
+        
+        dfa.transition(source[pos], STATE_IDENT_BUILD);
+        buffer += source[pos++];
+        
+        while (pos < source.length() && isalnum(source[pos])) {
+            dfa.transition(source[pos], STATE_IDENT_BUILD);
+            buffer += source[pos++];
         }
+        
+        string lower_buffer = buffer;
+        for (char& c : lower_buffer) {
+            c = std::tolower(static_cast<unsigned char>(c));
+        }
+        
+        auto it = keywordMap.find(lower_buffer);
+        if (it != keywordMap.end()) {
+            return {it->second, buffer}; 
+        }
+        
+        return {ident, buffer}; 
+    }
 
-		input_file.open(input_file_path);
-		
-		if (!input_file.is_open()) {
-			std::cerr << "Unable to open input file " << input_file_path << std::endl;
-		}
+    // Integers and Reals
+    if (isdigit(current)) {
+        string buffer = "";
+        bool is_real = false;
+        
+        dfa.transition(source[pos], STATE_INT_BUILD);
+        buffer += source[pos++];
+        
+        while (pos < source.length() && (isdigit(source[pos]) || source[pos] == '.')) {
+            if (source[pos] == '.') {
+                if (is_real) break; 
+                
+                if (pos + 1 < source.length() && source[pos+1] == '.') {
+                    break; 
+                }
+                is_real = true;
+                dfa.transition(source[pos], STATE_UNKNOWN); 
+            } else {
+                dfa.transition(source[pos], STATE_INT_BUILD);
+            }
+            buffer += source[pos++];
+        }
+        
+        if (is_real) return {realcon, buffer};
+        return {intcon, buffer}; 
     }
-	
-	std::ofstream output_file("lexer_output.txt");
-	if (!output_file.is_open()) {
-        std::cerr << "Error opening output file!" << std::endl;
-        return 1; // Return with an error code
-    }
-	
-	std::string line;
-	std::string cur_token;
-	State st = State::Word;
-    while (std::getline(input_file, line)) { // Read line by line
-        //std::cout << line << std::endl;
-		for (int i = 0; i < line.length(); i++) {
-			if (st == State::Esc) {
-				if (line[i] == '\'') {
-					cur_token += '\'';
-					st = State::StrChar;
-					continue;
-				} else {
-					if (cur_token.size() == 1) {
-						output_file << "charcon('" << cur_token << "')\n";
-					} else {
-						output_file << "string('" << cur_token << "')\n";
-					}
-					cur_token.clear();
-					st = State::Word;
-				}
-			}
-			if (st == State::StrChar) {
-				if (line[i] == '\'') {
-					st = State::Esc;
-				} else {
-					cur_token += line[i];
-				}
-			} else if (st == State::Comment) {
-				if (line[i] = '}') {
-					if (!cur_token.empty() && cur_token.front() == '*' && cur_token.back() == '*') {
-						cur_token = cur_token.substr(1, cur_token.size() - 1);
-					}
-					output_file << "comment(" << cur_token << ")\n";
-					cur_token.clear();
-					st = State::Word;
-				} else {
-					cur_token += line[i];
-				}
-			} else if (st == State::Word) {
-				//std::cout << cur_token << "|" << line[i] << "|" << (!is_word(line[i]) && !cur_token.empty()) << std::endl;
-				if (line[i] == '\'') {
-					print_word(output_file, cur_token);
-					st = State::StrChar;
-					continue;
-				} else if (line[i] == '{') {
-					if (!cur_token.empty()) print_word(output_file, cur_token);
-					st = State::Comment;
-					continue;
-				} else if (line[i] == ' ') {
-					if (!cur_token.empty()) print_word(output_file, cur_token);
-				} else if (!is_word(line[i])) {
-					if (!cur_token.empty()) print_word(output_file, cur_token);
-					st = State::Symbol;
-				}
-				if (line[i] != ' ') cur_token += line[i];
-			} else if (st == State::Symbol) {
-				if (line[i] == '\'') {
-					print_symbol(output_file, cur_token);
-					st = State::StrChar;
-					continue;
-				} else if (line[i] == '{') {
-					print_symbol(output_file, cur_token);
-					st = State::Comment;
-					continue;
-				} else if (line[i] == ' ') {
-					while (!cur_token.empty()) {
-						print_symbol(output_file, cur_token);
-					}
-				} else if (is_word(line[i])) {
-					while (!cur_token.empty()) {
-						print_symbol(output_file, cur_token);
-					}
-					st = State::Word;
-				}
-				if (line[i] != ' ') cur_token += line[i];
-			}
-			//std::cout << line[i] << is_word(line[i]) << std::endl;
-		}
-    }
-	if (st == State::StrChar || st == State::Comment) {
-		std::cerr << "Error: stale state" << std::endl;
-	} else if (st == State::Word) {
-		print_word(output_file, cur_token);
-	} else if (st == State::Symbol) {
-		while (!cur_token.empty()) {
-			print_symbol(output_file, cur_token);
-		}
-	}
 
-    input_file.close(); // Close the input_file (optional, destructor does this automatically)
-	output_file.close();
-    return 0;
+    pos++;
+    switch (current) {
+        case ';': 
+            dfa.transition(';', STATE_SEMICOLON);
+            return {semicolon, ";"};
+        case '.': 
+            dfa.transition('.', STATE_PERIOD);
+            return {period, "."}; 
+        case ':':
+            dfa.transition(':', STATE_COLON, "Goten: Colon");
+            if (pos < source.length() && source[pos] == '=') {
+                char next = source[pos++];
+                dfa.transition(next, STATE_BECOMES, "Goten: Becomes");
+                return {becomes, ":="};
+            }
+            return {colon, ":"};
+        case '+': 
+            dfa.transition('+', STATE_PLUS);
+            return {plus_tok, "+"};
+        case '-': 
+            dfa.transition('-', STATE_MINUS);
+            return {minus_tok, "-"};
+        case '*': 
+            dfa.transition('*', STATE_TIMES);
+            return {times, "*"};
+        case '/': 
+            dfa.transition('/', STATE_RDIV);
+            return {rdiv, "/"};
+        case '=': 
+            dfa.transition('=', STATE_EQUAL);
+            if (pos < source.length() && source[pos] == '=') { 
+                char next = source[pos++];
+                dfa.transition(next, STATE_DOUBLE_EQUAL);
+                return {eql, "=="}; 
+            }
+            return {unknown_tok, "="};
+        case '<':
+            dfa.transition('<', STATE_LESS);
+            if (pos < source.length() && source[pos] == '>') { 
+                dfa.transition('>', STATE_NEQ);
+                pos++; 
+                return {neq, "<>"}; 
+            }
+            if (pos < source.length() && source[pos] == '=') { 
+                dfa.transition('=', STATE_LEQ);
+                pos++; 
+                return {leq, "<="}; 
+            }
+            return {lss, "<"};
+        case '>':
+            dfa.transition('>', STATE_GREATER);
+            if (pos < source.length() && source[pos] == '=') { 
+                dfa.transition('=', STATE_GEQ);
+                pos++; 
+                return {geq, ">="}; 
+            }
+            return {gtr, ">"};
+        case '[':
+            dfa.transition('[', STATE_UNKNOWN);
+            return {lbrack, "["};
+        case ']':
+            dfa.transition(']', STATE_UNKNOWN);
+            return {rbrack, "]"};
+        case '{': {
+            dfa.transition('{', STATE_UNKNOWN); 
+            string buffer = "{";
+            while (pos < source.length() && source[pos] != '}') {
+                buffer += source[pos++];
+            }
+            if (pos < source.length()) {
+                buffer += source[pos++]; 
+            }
+            return {comment, buffer};
+        }
+        case '(': {
+            dfa.transition('(', STATE_LPAREN); 
+
+            if (pos < source.length() && source[pos] == '*') {
+                string buffer = "(*";
+                dfa.transition('*', STATE_UNKNOWN); 
+                pos++;
+                while (pos < source.length()) {
+                    if (source[pos] == '*' && (pos + 1 < source.length()) && source[pos + 1] == ')') {
+                        dfa.transition('*', STATE_UNKNOWN);
+                        dfa.transition(')', STATE_UNKNOWN);
+                        buffer += "*)";
+                        pos += 2; 
+                        return {comment, buffer};
+                    }
+                    dfa.transition(source[pos], STATE_UNKNOWN);
+                    buffer += source[pos++];
+                }
+                return {comment, buffer};
+            }
+            return {lparent, "("};
+        }
+        case ')': 
+            dfa.transition(')', STATE_RPAREN);
+            return {rparent, ")"};
+        case '\'': {
+            string raw_str = "";
+            dfa.transition('\'', STATE_STRING); 
+            
+            while (pos < source.length() && source[pos] != '\'') {
+                dfa.transition(source[pos], 21);
+                raw_str += source[pos++];
+            }
+            
+            if (pos < source.length() && source[pos] == '\'') {
+                dfa.transition('\'', STATE_STRING);
+                pos++; 
+            } 
+            
+            if (raw_str.length() == 1) {
+                return {charcon, "'" + raw_str + "'"};
+            }
+            return {string_tok, "'" + raw_str + "'"};
+        }
+        case ',':
+            dfa.transition(',', STATE_COMMA);
+            return {comma, ","};
+        default: 
+            dfa.transition(current, STATE_UNKNOWN);
+            return {unknown_tok, std::string(1, current)};
+    }
+}
+
+string getTokenName(TokenType type) {
+    switch (type) {
+        case intcon: return "intcon";
+        case realcon: return "realcon";
+        case charcon: return "charcon";
+        case string_tok: return "string";
+        case ident: return "ident";
+        case notsy: return "notsy";
+        case plus_tok: return "plus";
+        case minus_tok: return "minus";
+        case times: return "times";
+        case idiv: return "idiv";
+        case rdiv: return "rdiv";
+        case imod: return "imod";
+        case andsy: return "andsy";
+        case orsy: return "orsy";
+        case eql: return "eql";
+        case neq: return "neq";
+        case gtr: return "gtr";
+        case geq: return "geq";
+        case lss: return "lss";
+        case leq: return "leq";
+        case becomes: return "becomes";
+        case lparent: return "lparent";
+        case rparent: return "rparent";
+        case lbrack: return "lbrack";
+        case rbrack: return "rbrack";
+        case comma: return "comma";
+        case semicolon: return "semicolon";
+        case period: return "period";
+        case colon: return "colon";
+        case constsy: return "constsy";
+        case typesy: return "typesy";
+        case varsy: return "varsy";
+        case functionsy: return "functionsy";
+        case proceduresy: return "proceduresy";
+        case arraysy: return "arraysy";
+        case recordsy: return "recordsy";
+        case programsy: return "programsy";
+        case beginsy: return "beginsy";
+        case ifsy: return "ifsy";
+        case casesy: return "casesy";
+        case repeatsy: return "repeatsy";
+        case whilesy: return "whilesy";
+        case forsy: return "forsy";
+        case endsy: return "endsy";
+        case elsesy: return "elsesy";
+        case untilsy: return "untilsy";
+        case ofsy: return "ofsy";
+        case dosy: return "dosy";
+        case tosy: return "tosy";
+        case downtosy: return "downtosy";
+        case thensy: return "thensy";
+        case comment: return "comment";
+        case eof_tok: return "EOF";
+        default: return "unknown_tok";
+    }
 }

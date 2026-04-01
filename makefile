@@ -5,7 +5,8 @@ TARGET   := $(BIN_DIR)/compiler
 SRC_DIR  := src
 OBJ_DIR  := obj
 
-SRCS     := $(SRC_DIR)/compiler.cpp 
+# This wildcard automatically grabs compiler.cpp, lexer.cpp, etc.
+SRCS     := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS     := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 run: $(TARGET)
