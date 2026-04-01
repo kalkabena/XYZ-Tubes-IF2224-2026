@@ -1,19 +1,17 @@
 CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -Isrc/include
-TARGET   := compiler
+BIN_DIR  := bin
+TARGET   := $(BIN_DIR)/compiler
 SRC_DIR  := src
 OBJ_DIR  := obj
 
 SRCS     := $(SRC_DIR)/compiler.cpp 
 OBJS     := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
-all: $(TARGET)
-
-# The run target: builds the executable then runs it
 run: $(TARGET)
 	./$(TARGET)
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
@@ -22,7 +20,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) compiler
 
 .PHONY: all clean run

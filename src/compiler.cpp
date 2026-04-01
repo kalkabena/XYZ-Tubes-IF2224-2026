@@ -1,7 +1,7 @@
 #include "token.hpp"
 #include <bits/stdc++.h>
 int main() {
-    ifstream inputFile("kode_sumber/kode_sumber.txt");
+    ifstream inputFile("src/kode_sumber/kode_sumber.txt");
     if (!inputFile.is_open()) {
         cerr << "Error: Could not open the file 'input.txt'\n";
         return 1; 
