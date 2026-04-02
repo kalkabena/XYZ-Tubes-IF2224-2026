@@ -130,7 +130,7 @@ Token Lexer::getNextToken() {
                 dfa.transition(next, STATE_DOUBLE_EQUAL);
                 return {eql, "=="}; 
             }
-            return {unknown_tok, "="};
+            return {eql, "="};
         case '<':
             dfa.transition('<', STATE_LESS);
             if (pos < source.length() && source[pos] == '>') { 
@@ -153,10 +153,10 @@ Token Lexer::getNextToken() {
             }
             return {gtr, ">"};
         case '[':
-            dfa.transition('[', STATE_UNKNOWN);
+            dfa.transition('[', STATE_LBRACK);
             return {lbrack, "["};
         case ']':
-            dfa.transition(']', STATE_UNKNOWN);
+            dfa.transition(']', STATE_RBRACK);
             return {rbrack, "]"};
         case '{': {
             dfa.transition('{', STATE_UNKNOWN); 
@@ -213,6 +213,7 @@ Token Lexer::getNextToken() {
             }
             return {string_tok, "'" + raw_str + "'"};
         }
+        
         case ',':
             dfa.transition(',', STATE_COMMA);
             return {comma, ","};

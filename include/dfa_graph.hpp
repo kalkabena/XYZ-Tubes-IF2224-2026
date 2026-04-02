@@ -25,6 +25,8 @@ enum DfaState {
     STATE_COMMA = 22,
     STATE_LPAREN = 26,
     STATE_RPAREN = 27,
+    STATE_LBRACK = 28,
+    STATE_RBRACK = 29,
     // Mathematical Operators 
     STATE_PLUS = 30,        // '+'
     STATE_MINUS = 31,       // '-'
