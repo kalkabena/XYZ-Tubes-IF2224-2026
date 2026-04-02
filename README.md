@@ -96,3 +96,9 @@ g++ -std=c++17 -Iinclude src/lexer.cpp src/main.cpp -o bin/compiler
 ```
 
 ### Pembagian Tugas:
+| NIM | Nama | Pembagian Tugas |
+| :---: | :---: | :---: |
+| 13524114 | Mirza Tsabita Wafa'ana | Membuat Laporan dan membuat diagram transisi DFA |
+| 13524119 | Nathanael Shane Bennet | Membuat source code program |
+|13524130|Faris Wirakusuma Triawan|Membuat source code program dan menambahkan Hasil Pengujian di Laporan
+|13524144|Jonathan Harijadi|Mengerjakan Laporan
