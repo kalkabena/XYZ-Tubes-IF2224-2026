@@ -25,7 +25,7 @@ int main() {
     buffer << input_file.rdbuf();
     string code = buffer.str();
     input_file.close();
-    ofstream out("test/lexer_output.txt");
+    ofstream out("test/milestone1/lexer_output.txt");
     if (!out.is_open()) {
         cerr << "Gagal membuka file output." << endl;
         return 1;
