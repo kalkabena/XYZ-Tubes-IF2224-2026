@@ -41,7 +41,7 @@ int main() {
             out << name << "\n";
         }
     } while (t.type != eof_tok);
-    lexer.printDFA_Graph(out); 
+    // lexer.printDFA_Graph(out); 
     out.close();
     return 0;
 }
