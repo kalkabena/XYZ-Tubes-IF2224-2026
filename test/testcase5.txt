@@ -1,0 +1,14 @@
+program RecordTest;
+type
+  Point = record
+    x, y: integer;
+  end;
+var
+  p1: Point;
+begin
+  p1.x := 10;
+  p1.y := 20;
+  
+  { Menguji apakah lexer bingung antara . (period) dan .. (range) }
+  writeln('Coordinates: ', p1.x, ',', p1.y);
+end.

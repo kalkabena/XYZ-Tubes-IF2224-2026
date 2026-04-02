@@ -5,7 +5,7 @@
 
 
 enum TokenType {
-    // Literals & Identifiers
+    // Identifiers
     intcon, realcon, charcon, string_tok, ident,
     
     // Operators
@@ -28,16 +28,3 @@ struct Token {
     TokenType type;
     std::string lexeme;
 };
-
-// class Lexer {
-// private:
-//     string source;
-//     size_t pos;
-//     unordered_map<string, TokenType> keywordMap;
-//     DFA dfa;
-
-// public:
-//     Lexer(const string& src);
-//     void printDFA_Graph();
-//     Token getNextToken();
-// };

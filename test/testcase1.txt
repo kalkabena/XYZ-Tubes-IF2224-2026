@@ -12,9 +12,3 @@ begin
   a := 5;
   b := AddTen(a);
   writeln('Result = ', b);
-
-  for i := 1 to 5 do
-  begin
-    writeln('Loop = ', i);
-  end;
-end.

@@ -34,7 +34,7 @@ int main() {
     Lexer lexer(code);
     Token t;
 
-    cout << "\n--- Hasil Analisis Leksikal ---\n" << endl;
+    cout << "\n--- Lexer Res ---\n" << endl;
 
     do {
         t = lexer.getNextToken();

@@ -42,7 +42,7 @@ class DFA {
 private:
     int currentState;
     bool debug;
-    vector<string> transitionHistory; // Stores logs to print later
+    vector<string> transitionHistory;
 
 public:
     DFA(bool showDebug = true) : currentState(0), debug(showDebug) {}
@@ -53,7 +53,6 @@ public:
             string log = charStr + " => State " + to_string(nextState);
             if (!label.empty()) log += " [" + label + "]";
             
-            // Save the string to the vector INSTEAD of printing it
             transitionHistory.push_back(log); 
         }
         currentState = nextState;
@@ -61,8 +60,6 @@ public:
 
     void reset() { currentState = 0; }
     int getState() const { return currentState; }
-
-    // This is called AFTER the do-while loop in main finishes
     void printGraph() const {
         if (!debug) return;
         cout << "\n--- DFA Output ---\n";

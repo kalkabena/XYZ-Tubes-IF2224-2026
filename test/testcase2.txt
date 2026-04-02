@@ -1,26 +1,18 @@
-program ArrayTest;
-const
-  PI = 3.14;
+program LogicTest;
 var
-  numbers: array[1..5] of real;
-  i: integer;
+  x, y: integer;
+
+  check: boolean;
 begin
-  for i := 5 downto 1 do
-  begin
-    numbers[i] := i * PI;
-  end;
-end.
-program RecordTest;
-type
-  Point = record
-    x, y: integer;
-  end;
-var
-  p1: Point;
-begin
-  p1.x := 10;
-  p1.y := 20;
+  x := 10;
+  y := 20;
   
-  { Menguji apakah lexer bingung antara . (period) dan .. (range) }
-  writeln('Coordinates: ', p1.x, ',', p1.y);
+  if (x <> y) and (x <= y) then
+  begin
+    check := true;
+  end
+  else
+  begin
+    check := false;
+  end;
 end.
