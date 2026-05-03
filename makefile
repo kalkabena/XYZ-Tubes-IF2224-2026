@@ -6,7 +6,7 @@ SRC_DIR     := src
 OBJ_DIR     := obj
 
 # The output file path located in the test folder
-OUTPUT_FILE := test/lexer_output.txt
+OUTPUT_FILE := test/milestone_1/lexer_output.txt
 
 SRCS        := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS        := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
