@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "lexer.hpp"
+#include "parsingTree.hpp"
 
 using namespace std;
 
@@ -25,8 +26,9 @@ int main() {
     buffer << input_file.rdbuf();
     string code = buffer.str();
     input_file.close();
-    ofstream out("test/milestone_1/lexer_output.txt");
-    if (!out.is_open()) {
+    ofstream out1("test/milestone_1/lexer_output.txt");
+    ofstream out2("test/milestone_2/syntax_output.txt");
+    if (!out1.is_open()) {
         cerr << "Gagal membuka file output." << endl;
         return 1;
     }
@@ -50,13 +52,22 @@ int main() {
             formattedOutput = name;
         }
 
-        out << formattedOutput << "\n";
+        out1 << formattedOutput << "\n";
         cout << formattedOutput << endl;
 
     } while (t.type != eof_tok);
 
-    cout << "\n--- Selesai. Hasil disimpan di test/lexer_output.txt ---\n" << endl;
+    cout << "\n--- Lexer Selesai. Hasil disimpan di test/lexer_output.txt ---\n" << endl;
+    try{
+        ParsingTree parser(lexer);
+        parser.build();
+        parser.printToCLI();
+        parser.exportToFile("test/milestone_2/syntax_output.txt");
+    }
+    catch (const std::exception& e) {
+        cerr << "Error: " << e.what() << endl;
+    }
 
-    out.close();
+    out1.close();
     return 0;
 }
