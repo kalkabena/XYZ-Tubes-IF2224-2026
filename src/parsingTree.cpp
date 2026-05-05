@@ -182,6 +182,166 @@ unique_ptr<Node> ParsingTree::parseRange(){
     return node;
 }
 
+std::unique_ptr<Node> parseEnumerated(){
+    //lparent + ident + (comma + ident)* + rparent
+    auto node = std::make_unique<Node>(ENUMERATED);
+    
+    node->addChild(expect(lparent));
+    node->addChild(expect(ident));
+    
+    while (currentToken.type == comma) {
+        node->addChild(expect(comma));
+        node->addChild(expect(ident));
+    }
+    
+    node->addChild(expect(rparent));
+    return node;
+}
+
+std::unique_ptr<Node> parseRecordType(){
+    //recordsy + field-list + endsy
+    auto node = std::make_unique<Node>(RECORD_TYPE);
+    
+    node->addChild(expect(recordsy));
+    node->addChild(parseFieldList());
+    node->addChild(expect(endsy));
+    
+    return node;
+}
+
+std::unique_ptr<Node> parseFieldList(){
+    //field-part + (semicolon + field-part)*
+    auto node = std::make_unique<Node>(FIELD_LIST);
+    
+    node->addChild(parseFieldPart());
+    
+    while (currentToken.type == semicolon) {
+        node->addChild(expect(semicolon));
+        if (currentToken.type == ident) {
+            node->addChild(parseFieldPart());
+        }
+    }
+    
+    return node;
+}
+
+std::unique_ptr<Node> parseFieldPart(){
+    //identifier-list + colon + type
+    auto node = std::make_unique<Node>(FIELD_PART);
+    
+    node->addChild(parseIdentifierList());
+    node->addChild(expect(colon));
+    node->addChild(parseType());
+    
+    return node;
+}
+
+// Deklarasi Subprogram
+std::unique_ptr<Node> parseSubprogramDeclaration(){
+    //procedure-declaration | function-declaration
+    auto node = std::make_unique<Node>(SUBPROGRAM_DECLARATION);
+    
+    if (currentToken.type == proceduresy) {
+        node->addChild(parseProcedureDeclaration());
+    } else if (currentToken.type == functionsy) {
+        node->addChild(parseFunctionDeclaration());
+    }
+    
+    return node;
+}
+
+std::unique_ptr<Node> parseProcedureDeclaration(){
+    //proceduresy + ident + (formal-parameter-list)? + semicolon + block + semicolon
+    auto node = std::make_unique<Node>(PROCEDURE_DECLARATION);
+    
+    node->addChild(expect(proceduresy));
+    node->addChild(expect(ident));
+    
+    if (currentToken.type == lparent) {
+        node->addChild(parseFormalParameterList());
+    }
+    
+    node->addChild(expect(semicolon));
+    node->addChild(parseBlock());
+    node->addChild(expect(semicolon));
+    
+    return node;
+}
+
+std::unique_ptr<Node> parseFunctionDeclaration(){
+    //functionsy + ident + (formal-parameter-list)? + colon + ident + semicolon+ block + semicolon
+    auto node = std::make_unique<Node>(FUNCTION_DECLARATION);
+    
+    node->addChild(expect(functionsy));
+    node->addChild(expect(ident));
+    
+    if (currentToken.type == lparent) {
+        node->addChild(parseFormalParameterList());
+    }
+    
+    node->addChild(expect(colon));
+    node->addChild(expect(ident)); // Return type
+    node->addChild(expect(semicolon));
+    node->addChild(parseBlock());
+    node->addChild(expect(semicolon));
+    
+    return node;
+}
+
+// Blok
+std::unique_ptr<Node> parseBlock(){
+    //declaration-part + compound-statement
+    auto node = std::make_unique<Node>(BLOCK);
+    
+    node->addChild(parseDeclarationPart());
+    node->addChild(parseCompoundStatement());
+    
+    return node;
+}
+
+std::unique_ptr<Node> parseFormalParameterList(){
+    //lparent + parameter-group + (semicolon + parameter-group)* + rparent
+    auto node = std::make_unique<Node>(FORMAL_PARAMETER_LIST);
+    
+    node->addChild(expect(lparent));
+    node->addChild(parseParameterGroup());
+    
+    while (currentToken.type == semicolon) {
+        node->addChild(expect(semicolon));
+        node->addChild(parseParameterGroup());
+    }
+    
+    node->addChild(expect(rparent));
+    return node;
+}
+
+std::unique_ptr<Node> parseParameterGroup(){
+    //identifier-list + colon + (ident | array-type)
+    auto node = std::make_unique<Node>(PARAMETER_GROUP);
+    
+    node->addChild(parseIdentifierList());
+    node->addChild(expect(colon));
+    
+    if (currentToken.type == arraysy) {
+        node->addChild(parseArrayType());
+    } else {
+        node->addChild(expect(ident));
+    }
+    
+    return node;
+}
+
+// Deklarasi Blok
+std::unique_ptr<Node> parseCompoundStatement();{
+    //beginsy + statement-list + endsy
+    auto node = std::make_unique<Node>(COMPOUND_STATEMENT);
+    
+    node->addChild(expect(beginsy));
+    node->addChild(parseStatementList());
+    node->addChild(expect(endsy));
+    
+    return node;
+}
 
 void ParsingTree::build() {
     root = parseProgram();
