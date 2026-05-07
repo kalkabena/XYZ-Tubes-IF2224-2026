@@ -6,7 +6,10 @@ SRC_DIR     := src
 OBJ_DIR     := obj
 
 # The output file path located in the test folder
-OUTPUT_FILE := test/milestone_1/lexer_output.txt
+LEXER_OUTPUT_FILE := test/milestone_1/lexer_output.txt
+SYNTAX_OUTPUT_FILE := test/milestone_2/syntax_output.txt
+
+
 
 SRCS        := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS        := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
@@ -30,6 +33,7 @@ $(BIN_DIR):
 
 # Clean now explicitly removes the output from the test folder
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) $(OUTPUT_FILE)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LEXER_OUTPUT_FILE) $(SYNTAX_OUTPUT_FILE)
+
 
 .PHONY: all clean run
