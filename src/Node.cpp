@@ -1,25 +1,25 @@
 #include "Node.hpp"
 
 void Node::addChild(unique_ptr<Node> child) {
-    children.push_back(std::move(child));
+    if (child) children.push_back(std::move(child));
 }
 
-void Node::printDFS(std::ostream& os, std::string prefix = "", bool isLast = true, bool isRoot = true) const {
+void Node::printDFS(std::ostream& os, std::string prefix, bool isLast, bool isRoot) const {
     if (!isRoot) {
         os << prefix;
         os << (isLast ? "└── " : "├── ");
     }
 
-    os << nodeTypeToString(type);
-    if (!lexeme.empty()) {
-        os << "(" << lexeme << ")";
+    if (type == TOKEN_NODE) {
+        os << lexeme << "\n";
+    } else {
+        os << nodeTypeToString(type);
+        if (!lexeme.empty()) os << "(" << lexeme << ")";
+        os << "\n";
     }
-    os << "\n";
 
     std::string childPrefix = prefix;
-    if (!isRoot) {
-        childPrefix += (isLast ? "    " : "│   ");
-    }
+    if (!isRoot) childPrefix += (isLast ? "    " : "│   ");
 
     for (size_t i = 0; i < children.size(); ++i) {
         bool lastChild = (i == children.size() - 1);
@@ -29,6 +29,7 @@ void Node::printDFS(std::ostream& os, std::string prefix = "", bool isLast = tru
 
 string nodeTypeToString(NodeType type) {
     switch (type) {
+        case TOKEN_NODE: return "";
         case PROGRAM: return "<program>";
         case PROGRAM_HEADER: return "<program-header>";
         case DECLARATION_PART: return "<declaration-part>";
@@ -63,7 +64,7 @@ string nodeTypeToString(NodeType type) {
         case WHILE_STATEMENT: return "<while-statement>";
         case REPEAT_STATEMENT: return "<repeat-statement>";
         case FOR_STATEMENT: return "<for-statement>";
-        case PROCEDURE_FUNCTION_CALL: return "<procedure-function-call>";
+        case PROCEDURE_FUNCTION_CALL: return "<procedure/function-call>";
         case PARAMETER_LIST: return "<parameter-list>";
         case EXPRESSION: return "<expression>";
         case SIMPLE_EXPRESSION: return "<simple-expression>";
