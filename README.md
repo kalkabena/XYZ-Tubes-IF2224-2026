@@ -146,10 +146,11 @@ Kelas ParsingTree merupakan inti dari modul Syntax Analysis. Arsitektur kelas in
 private:
     Lexer& lexer;
     Token currentToken;
+    Token nextToken;
     std::unique_ptr<Node> root;
 ```
 
-Bagian ini menyimpan state operasional kompilator selama fase sintaksis berjalan. Objek lexer diikat menggunakan referensi (&) untuk memastikan parser membaca dari mesin DFA yang sama tanpa menyalin data. Variabel currentToken bertindak sebagai buffer tunggal yang menyimpan token yang sedang dievaluasi. Kepemilikan struktur pohon berakar pada root yang menggunakan smart pointer (std::unique_ptr); arsitektur ini menjamin pembersihan memori (garbage collection) pada seluruh cabang di bawahnya berjalan otomatis saat kompilasi selesai atau terhenti akibat crash, mengeliminasi risiko memory leak.
+Bagian ini menyimpan state operasional kompilator selama fase sintaksis berjalan. Objek lexer diikat menggunakan referensi (&) untuk memastikan parser membaca dari mesin DFA yang sama tanpa menyalin data. Variabel currentToken dan nextToken bertindak sebagai buffer yang menyimpan token yang sedang dievaluasi. Kepemilikan struktur pohon berakar pada root yang menggunakan smart pointer (std::unique_ptr); arsitektur ini menjamin pembersihan memori (garbage collection) pada seluruh cabang di bawahnya berjalan otomatis saat kompilasi selesai atau terhenti akibat crash, mengeliminasi risiko memory leak.
 
 #### Core Parsing Utilities (Utilitas Validasi Dasar):
 ```cpp
