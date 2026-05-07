@@ -12,3 +12,4 @@ begin
   a := 5;
   b := AddTen(a);
   writeln('Result = ', b);
+end.
