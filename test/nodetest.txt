@@ -1,0 +1,113 @@
+program TestAllNodes;
+
+{ --- Uji Node Deklarasi Konstanta & Tipe Data --- }
+const
+  CInt == 100;
+  CReal == 3.14;
+  CChar == 'a';
+  CString == 'Hello';
+  CSigned == -50;
+
+type
+  TRange == 1..100;
+  TEnum == (Merah, Putih, Biru);
+  TArray == array[TRange] of integer;
+  TRec == record
+            FieldX: integer;
+            FieldY: char;
+          end;
+
+{ --- Uji Node Deklarasi Variabel & Subprogram --- }
+var
+  GlobalInt, GlobalCount: integer;
+  GlobalReal: real;
+  MyArr: TArray;
+  MyRec: TRec;
+  MyEnum: TEnum;
+
+{ Procedure dengan parameter untuk menguji <formal-parameter-list> }
+procedure Hitung(X: integer; Y: real);
+var
+  LocalVar: integer;
+begin
+  LocalVar := X;
+end;
+
+{ Function dengan return type untuk menguji <function-declaration> }
+function GetStatus(A: integer): boolean;
+begin
+  GetStatus := (A > 0);
+end;
+
+{ --- Uji Node Statement & Ekspresi (Main Program) --- }
+begin
+  
+  { 1. Assignment & Variable Access }
+  GlobalInt := 10;
+  GlobalReal := 20.5;
+  
+  { 2. Component Variable (Array & Record Access) }
+  MyArr[1] := 50;           { <component-variable> dengan <index-list> }
+  MyRec.FieldX := 100;      { <component-variable> dengan field record }
+  MyArr[GlobalInt] := 5;   { <index-list> menggunakan ident }
+
+  { 3. Procedure & Function Call }
+  Hitung(GlobalInt, GlobalReal);
+  GlobalInt := GetStatus(5);
+
+  { 4. If Statement (Relational Operators) }
+  { Operator: ==, <>, >, >=, <, <= }
+  if GlobalInt == 10 then
+    GlobalInt := 0
+  else if GlobalInt <> 0 then
+    GlobalInt := 1;
+
+  if GlobalInt >= 5 then
+    GlobalReal := 1.0;
+    
+  if GlobalReal < 5.0 then
+    GlobalReal := 5.0;
+
+  { 5. Case Statement }
+  case MyEnum of
+    Merah: GlobalInt := 1;
+    Putih, Biru: GlobalInt := 2;
+  end;
+
+  { 6. Loop Statements }
+  { While }
+  while GlobalInt < 10 do
+  begin
+    GlobalInt := GlobalInt + 1;
+  end;
+
+  { Repeat }
+  repeat
+    GlobalInt := GlobalInt - 1
+  until GlobalInt == 0;
+
+  { For (To & Downto) }
+  for GlobalCount := 1 to 10 do
+    GlobalInt := GlobalCount;
+
+  for GlobalCount := 10 downto 1 do
+    MyArr[GlobalCount] := 0;
+
+  { 7. Complex Expressions (Operator Precedence) }
+  
+  { Multiplicative Operators: *, /, div, MOD, AND }
+  GlobalInt := 10 * 2;
+  GlobalReal := 10.0 / 2.0;
+  GlobalInt := 10 div 3;
+  GlobalInt := 10 MOD 3;
+  
+  { Additive Operators: +, -, OR }
+  GlobalInt := GlobalInt + 1;
+  GlobalInt := GlobalInt - 1;
+  if (GlobalInt > 0) OR (GlobalReal > 0) then
+    GlobalInt := 0;
+
+  { Factor dengan NOT dan Tanda Kurung }
+  GlobalInt := NOT (GlobalInt == 0);
+
+end.
