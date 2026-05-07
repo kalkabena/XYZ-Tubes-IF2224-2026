@@ -10,10 +10,14 @@ private:
     size_t pos;
     std::unordered_map<std::string, TokenType> keywordMap;
     DFA dfa;
+    Token peekBuffer;
+    bool hasPeek = false;
 
+    Token scanToken();
 public:
     Lexer(const std::string& src);
     void printDFA_Graph(std::ostream& out);
+    Token peekToken();
     Token getNextToken();
 };
 

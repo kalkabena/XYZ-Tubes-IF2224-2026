@@ -1,8 +1,9 @@
-#include "lexer.hpp"
 
+#include <bits/stdc++.h>
+#include "lexer.hpp"
 using namespace std;
 
-Lexer::Lexer(const string& src) : source(src), pos(0), dfa(true) {
+Lexer::Lexer(const string& src) : source(src), pos(0), dfa(true), hasPeek(false) {
     keywordMap["not"] = notsy;
     keywordMap["div"] = idiv;
     keywordMap["mod"] = imod;
@@ -37,6 +38,22 @@ void Lexer::printDFA_Graph(std::ostream& out) {
 }
 
 Token Lexer::getNextToken() {
+    if (hasPeek) {
+        hasPeek = false;
+        return peekBuffer;
+    }
+    return scanToken();
+}
+
+Token Lexer::peekToken() {
+    if (!hasPeek) {
+        peekBuffer = scanToken();
+        hasPeek = true;
+    }
+    return peekBuffer;
+}
+
+Token Lexer::scanToken() {
     while (pos < source.length() && std::isspace(source[pos])) pos++;
     
     if (pos >= source.length()) return {eof_tok, "EOF"};
@@ -67,8 +84,6 @@ Token Lexer::getNextToken() {
         
         return {ident, buffer}; 
     }
-
-    // Integers and Reals
     if (isdigit(current)) {
         string buffer = "";
         bool is_real = false;
@@ -104,10 +119,10 @@ Token Lexer::getNextToken() {
             dfa.transition('.', STATE_PERIOD);
             return {period, "."}; 
         case ':':
-            dfa.transition(':', STATE_COLON, "Goten: Colon");
+            dfa.transition(':', STATE_COLON); 
             if (pos < source.length() && source[pos] == '=') {
                 char next = source[pos++];
-                dfa.transition(next, STATE_BECOMES, "Goten: Becomes");
+                dfa.transition(next, STATE_BECOMES);
                 return {becomes, ":="};
             }
             return {colon, ":"};
@@ -158,57 +173,64 @@ Token Lexer::getNextToken() {
         case ']':
             dfa.transition(']', STATE_RBRACK);
             return {rbrack, "]"};
+            
         case '{': {
             dfa.transition('{', STATE_UNKNOWN); 
-            string buffer = "{";
             while (pos < source.length() && source[pos] != '}') {
-                buffer += source[pos++];
+                pos++;
             }
             if (pos < source.length()) {
-                buffer += source[pos++]; 
+                pos++; 
             }
-            return {comment, buffer};
+            return scanToken();
         }
+        
         case '(': {
             dfa.transition('(', STATE_LPAREN); 
 
             if (pos < source.length() && source[pos] == '*') {
-                string buffer = "(*";
                 dfa.transition('*', STATE_UNKNOWN); 
                 pos++;
                 while (pos < source.length()) {
                     if (source[pos] == '*' && (pos + 1 < source.length()) && source[pos + 1] == ')') {
                         dfa.transition('*', STATE_UNKNOWN);
                         dfa.transition(')', STATE_UNKNOWN);
-                        buffer += "*)";
                         pos += 2; 
-                        return {comment, buffer};
+                        return scanToken();
                     }
                     dfa.transition(source[pos], STATE_UNKNOWN);
-                    buffer += source[pos++];
+                    pos++;
                 }
-                return {comment, buffer};
+                return scanToken();
             }
             return {lparent, "("};
         }
+        
         case ')': 
             dfa.transition(')', STATE_RPAREN);
             return {rparent, ")"};
+            
         case '\'': {
             string raw_str = "";
             dfa.transition('\'', STATE_STRING); 
             
-            while (pos < source.length() && source[pos] != '\'') {
-                dfa.transition(source[pos], 21);
+            while (pos < source.length()) {
+                if (source[pos] == '\'') {
+                    if (pos + 1 < source.length() && source[pos+1] == '\'') {
+                        raw_str += "''"; 
+                        pos += 2;       
+                        continue;
+                    } else {
+                        dfa.transition('\'', STATE_STRING);
+                        pos++; 
+                        break;
+                    }
+                }
+                dfa.transition(source[pos], 21); // Asumsi state 21 = body string
                 raw_str += source[pos++];
             }
             
-            if (pos < source.length() && source[pos] == '\'') {
-                dfa.transition('\'', STATE_STRING);
-                pos++; 
-            } 
-            
-            if (raw_str.length() == 1) {
+            if (raw_str.length() == 1 && raw_str != "''") {
                 return {charcon, "'" + raw_str + "'"};
             }
             return {string_tok, "'" + raw_str + "'"};
@@ -217,6 +239,7 @@ Token Lexer::getNextToken() {
         case ',':
             dfa.transition(',', STATE_COMMA);
             return {comma, ","};
+            
         default: 
             dfa.transition(current, STATE_UNKNOWN);
             return {unknown_tok, std::string(1, current)};

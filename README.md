@@ -89,6 +89,8 @@ Gunakan Makefile yang tersedia untuk mengelola build secara otomatis:
 make run
 # Untuk Membersikan bin dan exe lama
 make clean
+# Untuk Melakukan Keduanya
+make clean && make run
 ```
 Jika tidak menggunakan Makefile:
 ```bash
