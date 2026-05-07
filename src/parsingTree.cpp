@@ -6,13 +6,21 @@
 using namespace std;
 
 ParsingTree::ParsingTree(Lexer& lexInstance) : lexer(lexInstance), root(nullptr) {
-    advance();
-}
-
-void ParsingTree::advance() {
     currentToken = lexer.getNextToken();
     while (currentToken.type == comment) {
         currentToken = lexer.getNextToken();
+    }
+	nextToken = lexer.getNextToken();
+	while (nextToken.type == comment) {
+        nextToken = lexer.getNextToken();
+    }
+}
+
+void ParsingTree::advance() {
+	currentToken = nextToken;
+    nextToken = lexer.getNextToken();
+	while (nextToken.type == comment) {
+        nextToken = lexer.getNextToken();
     }
 }
 
@@ -538,7 +546,8 @@ unique_ptr<Node> ParsingTree::parseFactor() {
         node->addChild(parseFactor());
     } else if (currentToken.type == ident) {
         // ident bisa function call atau variable. Keduanya dimakan dari ident.
-        if (currentToken.type == ident) node->addChild(parseProcedureFunctionCall());
+        if (nextToken.type == lparent) node->addChild(parseProcedureFunctionCall());
+		else node->addChild(expect(ident));
     } else {
         throw runtime_error("Syntax Error: expected factor, got " + getTokenName(currentToken.type));
     }

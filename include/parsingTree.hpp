@@ -11,6 +11,7 @@ class ParsingTree {
 private:
     Lexer& lexer;
     Token currentToken;
+    Token nextToken;
     std::unique_ptr<Node> root;
 
     void advance();
