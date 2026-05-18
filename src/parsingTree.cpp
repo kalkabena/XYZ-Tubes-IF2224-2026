@@ -451,7 +451,8 @@ unique_ptr<Node> ParsingTree::parseWhileStatement() {
     node->addChild(expect(whilesy));
     node->addChild(parseExpression());
     node->addChild(expect(dosy));
-    node->addChild(parseStatement());
+    node->addChild(parseCompoundStatement());
+    node->addChild(expect(semicolon));
     return node;
 }
 
@@ -474,7 +475,8 @@ unique_ptr<Node> ParsingTree::parseForStatement() {
     else node->addChild(expect(downtosy));
     node->addChild(parseExpression());
     node->addChild(expect(dosy));
-    node->addChild(parseStatement());
+    node->addChild(parseCompoundStatement());
+    node->addChild(expect(semicolon));
     return node;
 }
 
