@@ -1,20 +1,23 @@
-# ARION COMPILER
+# ⚙️ ARION COMPILER
 
- Identitas Kelompok:
-### Nama Kelompok: Empty String
-### Anggota Kelompok :
-* #### 13524114 Mirza Tsabita Wafa'ana
-* #### 13524119 Nathanael Shane Bennet
-* #### 13524130 Faris Wirakusuma Triawan
-* #### 13524144 Jonathan Harijadi
+**Nama Kelompok:** Empty String
 
-## Deskripsi Program:
-Program dibuat menggunakan bahasa C++ dan implementasi lexer dan dfa terdapat pada file file berikut: lexer.cpp dan hpp token.hpp dan dfa_graph.hpp.
+### 👥 Anggota Kelompok
+| NIM | Nama |
+| :---: | :--- |
+| 13524114 | Mirza Tsabita Wafa'ana |
+| 13524119 | Nathanael Shane Bennet |
+| 13524130 | Faris Wirakusuma Triawan |
+| 13524144 | Jonathan Harijadi |
 
-###  ***A. LEXER ANALIZER <Milestone_1>*** 
+---
 
+## 📝 Deskripsi Program
+Program kompilator Arion dibuat menggunakan bahasa **C++**. Implementasi arsitektur kompilator ini dibagi menjadi beberapa modul utama (*Milestones*) yang mencakup seluruh tahapan kompilasi mulai dari analisis leksikal, analisis sintaksis, hingga analisis semantik dan pembuatan tabel simbol.
 
-### 1. File token.hpp
+## 🔍 A. LEXICAL ANALYZER (Milestone 1)
+
+### 1. File `token.hpp`
 File ini bertugas sebagai definisi struktur data fundamental yang akan menjadi output dari lexer dan input bagi parser. Didalam file ini terdapat enum yang berisikan token-token yang nantinya akan dibaca oleh lexical analyzer pemanggilan token dapat dilakukan melalui struct token.
 
 Berikut adalah implemensi enum token:
@@ -215,14 +218,61 @@ Milestone 3 berfokus pada tahapan analisis semantik awalan. Pada tahap ini, dila
 ### 1. Konversi CST ke AST (ASTNode.hpp & AST_Tree.cpp)
 *Concrete Syntax Tree* (CST) yang dihasilkan pada Milestone 2 memuat sangat banyak node struktural dari tata bahasa sintaksis (seperti `STATEMENT_LIST`, `SIMPLE_EXPRESSION`, serta token delimiter/kurung pembantu) yang tidak lagi relevan untuk tahap pengerjaan (eksekusi/evaluasi). Konversi CST ke AST bertujuan untuk membuang percabangan redundan tersebut sehingga menyisakan struktur logika kode yang padat.
 
+Berikut adalah cuplikan ilustrasi dari abstraksi node dalam struktur AST:
+```cpp
+class ASTNode {
+public:
+    virtual ~ASTNode() = default;
+    virtual void print(std::ostream& os, std::string prefix = "", bool isLast = true) const = 0;
+};
+
+// Contoh turunan node operasional yang padat
+class AssignNode : public ASTNode {
+    std::unique_ptr<ASTNode> variable;
+    std::unique_ptr<ASTNode> expression;
+};
+```
+
 - **ASTNode.hpp**: Kelas ini mendefinisikan abstraksi dasar dari pohon AST beserta node-node turunannya yang fungsional (contoh: `AssignNode`, `CallNode`, `BinOpNode`, `IfNode`, `WhileNode`, `ForNode`, dsb).
 - **AST_Tree.cpp**: Berfungsi menelusuri objek CST secara rekursif. Konverter membedah blok node makro ke bentuk yang paling mikro guna mengekstrak *identifier* maupun perhitungannya secara utuh, lalu menyusunnya menjadi instance objek kelas *Abstract Syntax Tree*.
 
 ### 2. Symbol Table (SymbolTable.hpp & SymbolTable.cpp)
 *Symbol Table* dirancang khusus untuk memetakan nama *identifier* (konstanta, tipe, variabel, prosedur, fungsi) yang muncul di program dengan properti detail yang melekat padanya. Menggunakan struktur array dinamis yang mensimulasikan pendekatan *block-structured*:
+
+Berikut adalah implementasi struktur dasar elemen tabel (*TabEntry*) dari Main Symbol Table:
+```cpp
+struct TabEntry {
+    std::string name; 
+    int link;        
+    ObjectClass obj; // Variabel, fungsi, prosedur, tipe, konstanta
+    DataType type;   // Tipe data: Integer, Real, Array, dsb. 
+    int ref;         // Menunjuk ke tabel referensi lain (seperti ATAB/BTAB)
+    int nrm;         
+    int lev;         // Level kedalaman Scope
+    int adr;         
+};
+```
+Terdapat tiga tabel inti yang saling merelasikan informasi identifier:
 - **TAB (Main Symbol Table)**: Menyimpan semua entri *identifier* dengan informasi vital meliputi nama, kategori objek (`OBJ_VARIABLE`, `OBJ_PROCEDURE`, dll), tipe objek (`TYPE_INTEGER`, `TYPE_REAL`, dll), tingkat ruang lingkup/scope eksekusi (`lev`), dan referensinya.
 - **ATAB (Array Table)**: Tabel pembantu khusus dalam mendefinisikan Array/Struktur jamak. Tabel ini mencatat tipe indeks (`xtyp`), tipe elemen dasar (`etyp`), batas bawah alokasi (`low`), batas atas (`high`), dan total memori/elemen komputasinya.
 - **BTAB (Block Table)**: Tabel referensi dari ruang lingkup (*scope*) dari berbagai prosedur maupun blok utama. Mencatat relasi cakupan yang digunakan untuk mengetahui jumlah argumen fungsi/prosedur (`lpar`) dan total ukuran alokasi variabel memori di block tersebut (`vsze`).
+
+Untuk mempopulasikan *Symbol Table*, digunakan metode `traverseNode` yang menelusuri CST mulai dari root Node (*Depth-First Search*) seperti berikut:
+```cpp
+void SymbolTable::buildFromNode(Node* cstRoot) {
+    currentLev = 0;
+    currentBlock = 0;
+    
+    // Inisialisasi blok global awal program (Level 0)
+    btab.last = 0; 
+    btab.lpar = 0;
+    btab.psze = 0;
+    btab.vsze = 0;
+
+    traverseNode(cstRoot, currentLev);
+}
+```
+Fungsi `traverseNode` akan mendeteksi setiap pembuatan properti program dan secara otomatis mengekstraksi nama serta tipe dan mendaftarkannya ke dalam tabel dinamis terkait (TAB/ATAB/BTAB).
 
 ## Requirements:
 * MakeFile
