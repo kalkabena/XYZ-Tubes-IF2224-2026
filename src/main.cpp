@@ -31,11 +31,11 @@ int main() {
     string code = buffer.str();
     input_file.close();
 
-    filesystem::create_directories("test/milestone_1");
-    filesystem::create_directories("test/milestone_2");
-    filesystem::create_directories("test/milestone_3");
+    // filesystem::create_directories("test/output/milestone_1");
+    // filesystem::create_directories("test/output/milestone_2");
+    // filesystem::create_directories("test/output/milestone_3");
 
-    ofstream out1("test/milestone_1/lexer_output.txt");
+    ofstream out1("test/output/milestone_1.txt");
     if (!out1.is_open()) {
         cerr << "Gagal membuka file output lexer." << endl;
         return 1;
@@ -67,7 +67,7 @@ int main() {
     } while (t.type != eof_tok);
 
     out1.close();
-    cout << "\n--- Lexer selesai. Output: test/milestone_1/lexer_output.txt ---\n" << endl;
+    cout << "\n--- Lexer selesai. Output: test/output/milestone_1.txt ---\n" << endl;
 
     cout << "\n--- Parser Result ---\n" << endl;
 
@@ -75,8 +75,8 @@ int main() {
         ParsingTree parser(lexerForParser);
         parser.build();
         parser.printToCLI();
-        parser.exportToFile("test/milestone_2/syntax_output.txt");
-        cout << "\n--- Parser selesai. Output: test/milestone_2/syntax_output.txt ---\n" << endl;
+        parser.exportToFile("test/output/milestone_2.txt");
+        cout << "\n--- Parser selesai. Output: test/output/milestone_2.txt ---\n" << endl;
 
         // Fase 2: Transformasi ke AST
         Node* cstRoot = const_cast<Node*>(parser.getRoot()); 
@@ -88,10 +88,8 @@ int main() {
         
         SymbolTable symTable;
         symTable.buildFromNode(cstRoot); 
-        symTable.printTab(); // Tampilkan tabel di CLI sesuai permintaan lu
-        
-        // Generator Output (Gunakan 3 parameter agar AST bisa ikut tercetak)
-        string milestone3Path = "test/milestone_3/milestone3.txt";
+        symTable.printTab(); 
+        string milestone3Path = "test/output/milestone_3.txt";
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
         
         cout << "\n--- Semantic Analysis selesai. Output: " << milestone3Path << " ---\n" << endl;
