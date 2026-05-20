@@ -14,6 +14,10 @@ private:
     Token nextToken;
     std::unique_ptr<Node> root;
 
+public:
+    Node* getRoot() const { return root.get(); }
+
+
     void advance();
     bool isStatementStart(TokenType type) const;
     bool isFactorStart(TokenType type) const;
