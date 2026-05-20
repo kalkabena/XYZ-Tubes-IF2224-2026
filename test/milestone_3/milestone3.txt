@@ -1,0 +1,37 @@
+--- SYMBOL TABLE (TAB) ---
+idx  id             obj         type     ref  nrm  lev  adr  link
+-----------------------------------------------------------------
+33   ArrayTest      4           0       0    1    0    0    0
+34   PI             1           2       0    1    0    0    0
+35   numbers        2           6       1    1    0    0    0
+36   i              2           1       0    1    0    0    0
+
+--- ARRAY TABLE (ATAB) ---
+idx  xtyp   etyp   eref   low    high   elsz   size
+---------------------------------------------------
+1    1      2      0      0      0      1      1
+
+--- BLOCK TABLE (BTAB) ---
+idx  last  lpar  psze  vsze
+---------------------------
+0    0     0     0     0
+1    36    0     0     2
+
+--- DECORATED AST ---
+└── BlockNode
+    ├── BlockNode
+    │   └── VarDeclNode(Type: arraysy)
+    │       └── numbers
+    └── BlockNode
+        └── BlockNode
+            └── ForNode(var: i)
+                ├── ├── NumberNode(5)
+                ├── ├── NumberNode(1)
+                └── └── BlockNode
+                └──     └── BlockNode
+                └──         └── AssignNode
+                └──             ├── ArrayAccessNode(array: numbers)
+                └──             │   └── [NULL INDEX]
+                └──             └── BinOpNode(op: '')
+                └──                 ├── VariableNode(i)
+                └──                 └── VariableNode(PI)

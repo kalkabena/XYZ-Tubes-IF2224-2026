@@ -62,11 +62,11 @@ public:
 
 class AssignNode : public ASTNode {
 public:
-    string targetVariable;
+    unique_ptr<ASTNode> targetVariable;
     unique_ptr<ASTNode> value; 
 
-    AssignNode(string target, unique_ptr<ASTNode> val) 
-        : targetVariable(target), value(move(val)) {}
+    AssignNode(unique_ptr<ASTNode> target, unique_ptr<ASTNode> val) 
+        : targetVariable(move(target)), value(move(val)) {}
     void print(std::ostream& os, std::string prefix, bool isLast) const override;
 };
 class BinOpNode : public ASTNode {

@@ -4,6 +4,8 @@
 #include <filesystem>
 #include "lexer.hpp"
 #include "parsingTree.hpp"
+#include "AST_Tree.hpp"
+#include "SymbolTable.hpp"
 
 using namespace std;
 
@@ -31,6 +33,7 @@ int main() {
 
     filesystem::create_directories("test/milestone_1");
     filesystem::create_directories("test/milestone_2");
+    filesystem::create_directories("test/milestone_3");
 
     ofstream out1("test/milestone_1/lexer_output.txt");
     if (!out1.is_open()) {
@@ -74,8 +77,27 @@ int main() {
         parser.printToCLI();
         parser.exportToFile("test/milestone_2/syntax_output.txt");
         cout << "\n--- Parser selesai. Output: test/milestone_2/syntax_output.txt ---\n" << endl;
+
+        // Fase 2: Transformasi ke AST
+        Node* cstRoot = const_cast<Node*>(parser.getRoot()); 
+        AST_Tree astBuilder;
+        unique_ptr<ASTNode> astRoot = astBuilder.build(cstRoot);
+
+        // Fase 3: Analisis Semantik & Generate Report Milestone 3
+        cout << "\n--- Semantic Analysis Result ---\n" << endl;
+        
+        SymbolTable symTable;
+        symTable.buildFromNode(cstRoot); 
+        symTable.printTab(); // Tampilkan tabel di CLI sesuai permintaan lu
+        
+        // Generator Output (Gunakan 3 parameter agar AST bisa ikut tercetak)
+        string milestone3Path = "test/milestone_3/milestone3.txt";
+        symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
+        
+        cout << "\n--- Semantic Analysis selesai. Output: " << milestone3Path << " ---\n" << endl;
+
     } catch (const exception& e) {
-        cerr << "Parser Error: " << e.what() << endl;
+        cerr << "Compiler Error: " << e.what() << endl;
         return 1;
     }
 
