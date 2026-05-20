@@ -206,6 +206,24 @@ Metode build() bertindak sebagai pemicu (trigger) utama untuk merangkai objek po
 
 Setelah kompilasi sintaksis berhasil, printToCLI() dan exportToFile() disediakan untuk melintasi graf memori secara Depth-First Search (DFS) guna merender struktur hierarki 2D secara visual ke layar terminal atau menyimpannya sebagai berkas rekam jejak (log).
 
+###  ***C. SEMANTIC ANALYZER & SYMBOL TABLE <Milestone_3>***
+
+Milestone 3 berfokus pada tahapan analisis semantik awalan. Pada tahap ini, dilakukan proses penyederhanaan *Concrete Syntax Tree* (CST) menjadi *Abstract Syntax Tree* (AST), serta pembuatan *Symbol Table* untuk melacak dan menyimpan informasi terkait identifier program.
+
+*(Catatan: Implementasi Error Handling untuk mendeteksi semantic error seperti ketidaksesuaian tipe data, pemanggilan fungsi tak terdefinisi, atau penggunaan variabel yang belum dideklarasikan saat ini sedang dalam pengerjaan dan akan ditambahkan pada *update* berikutnya).*
+
+### 1. Konversi CST ke AST (ASTNode.hpp & AST_Tree.cpp)
+*Concrete Syntax Tree* (CST) yang dihasilkan pada Milestone 2 memuat sangat banyak node struktural dari tata bahasa sintaksis (seperti `STATEMENT_LIST`, `SIMPLE_EXPRESSION`, serta token delimiter/kurung pembantu) yang tidak lagi relevan untuk tahap pengerjaan (eksekusi/evaluasi). Konversi CST ke AST bertujuan untuk membuang percabangan redundan tersebut sehingga menyisakan struktur logika kode yang padat.
+
+- **ASTNode.hpp**: Kelas ini mendefinisikan abstraksi dasar dari pohon AST beserta node-node turunannya yang fungsional (contoh: `AssignNode`, `CallNode`, `BinOpNode`, `IfNode`, `WhileNode`, `ForNode`, dsb).
+- **AST_Tree.cpp**: Berfungsi menelusuri objek CST secara rekursif. Konverter membedah blok node makro ke bentuk yang paling mikro guna mengekstrak *identifier* maupun perhitungannya secara utuh, lalu menyusunnya menjadi instance objek kelas *Abstract Syntax Tree*.
+
+### 2. Symbol Table (SymbolTable.hpp & SymbolTable.cpp)
+*Symbol Table* dirancang khusus untuk memetakan nama *identifier* (konstanta, tipe, variabel, prosedur, fungsi) yang muncul di program dengan properti detail yang melekat padanya. Menggunakan struktur array dinamis yang mensimulasikan pendekatan *block-structured*:
+- **TAB (Main Symbol Table)**: Menyimpan semua entri *identifier* dengan informasi vital meliputi nama, kategori objek (`OBJ_VARIABLE`, `OBJ_PROCEDURE`, dll), tipe objek (`TYPE_INTEGER`, `TYPE_REAL`, dll), tingkat ruang lingkup/scope eksekusi (`lev`), dan referensinya.
+- **ATAB (Array Table)**: Tabel pembantu khusus dalam mendefinisikan Array/Struktur jamak. Tabel ini mencatat tipe indeks (`xtyp`), tipe elemen dasar (`etyp`), batas bawah alokasi (`low`), batas atas (`high`), dan total memori/elemen komputasinya.
+- **BTAB (Block Table)**: Tabel referensi dari ruang lingkup (*scope*) dari berbagai prosedur maupun blok utama. Mencatat relasi cakupan yang digunakan untuk mengetahui jumlah argumen fungsi/prosedur (`lpar`) dan total ukuran alokasi variabel memori di block tersebut (`vsze`).
+
 ## Requirements:
 * MakeFile
 
@@ -418,6 +436,47 @@ period
 │   └── endsy
 └── period
 
+```
+
+#### Output(Symbol Table & AST - Milestone 3):
+```
+--- SYMBOL TABLE (TAB) ---
+idx  id             obj         type     ref  nrm  lev  adr  link
+-----------------------------------------------------------------
+33   ArrayTest      4           0       0    1    0    0    0
+34   PI             1           2       0    1    0    0    0
+35   numbers        2           6       1    1    0    0    0
+36   i              2           1       0    1    0    0    0
+
+--- ARRAY TABLE (ATAB) ---
+idx  xtyp   etyp   eref   low    high   elsz   size
+---------------------------------------------------
+1    1      2      0      0      0      1      1
+
+--- BLOCK TABLE (BTAB) ---
+idx  last  lpar  psze  vsze
+---------------------------
+0    0     0     0     0
+1    36    0     0     2
+
+--- DECORATED AST ---
+└── BlockNode
+    ├── BlockNode
+    │   └── VarDeclNode(Type: arraysy)
+    │       └── numbers
+    └── BlockNode
+        └── BlockNode
+            └── ForNode(var: i)
+                ├── ├── NumberNode(5)
+                ├── ├── NumberNode(1)
+                └── └── BlockNode
+                └──     └── BlockNode
+                └──         └── AssignNode
+                └──             ├── ArrayAccessNode(array: numbers)
+                └──             │   └── [NULL INDEX]
+                └──             └── BinOpNode(op: '')
+                └──                 ├── VariableNode(i)
+                └──                 └── VariableNode(PI)
 ```
 
 ### Pembagian Tugas:
