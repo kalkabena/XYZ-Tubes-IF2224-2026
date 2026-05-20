@@ -88,10 +88,14 @@ begin
 
   { For (To & Downto) }
   for GlobalCount := 1 to 10 do
+  begin
     GlobalInt := GlobalCount;
+  end;
 
   for GlobalCount := 10 downto 1 do
+  begin
     MyArr[GlobalCount] := 0;
+  end;
 
   { 7. Complex Expressions (Operator Precedence) }
   

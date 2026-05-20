@@ -452,7 +452,7 @@ unique_ptr<Node> ParsingTree::parseWhileStatement() {
     node->addChild(parseExpression());
     node->addChild(expect(dosy));
     node->addChild(parseCompoundStatement());
-    node->addChild(expect(semicolon));
+    // node->addChild(expect(semicolon));
     return node;
 }
 
@@ -476,7 +476,7 @@ unique_ptr<Node> ParsingTree::parseForStatement() {
     node->addChild(parseExpression());
     node->addChild(expect(dosy));
     node->addChild(parseCompoundStatement());
-    node->addChild(expect(semicolon));
+    // node->addChild(expect(semicolon));
     return node;
 }
 
@@ -533,28 +533,28 @@ unique_ptr<Node> ParsingTree::parseTerm() {
     return node;
 }
 
-unique_ptr<Node> ParsingTree::parseFactor() {
-    auto node = make_unique<Node>(FACTOR);
-    if (currentToken.type == intcon) node->addChild(expect(intcon));
-    else if (currentToken.type == realcon) node->addChild(expect(realcon));
-    else if (currentToken.type == charcon) node->addChild(expect(charcon));
-    else if (currentToken.type == string_tok) node->addChild(expect(string_tok));
-    else if (currentToken.type == lparent) {
-        node->addChild(expect(lparent));
-        node->addChild(parseExpression());
-        node->addChild(expect(rparent));
-    } else if (currentToken.type == notsy) {
-        node->addChild(expect(notsy));
-        node->addChild(parseFactor());
-    } else if (currentToken.type == ident) {
-        // ident bisa function call atau variable. Keduanya dimakan dari ident.
-        if (nextToken.type == lparent) node->addChild(parseProcedureFunctionCall());
-		else node->addChild(expect(ident));
-    } else {
-        throw runtime_error("Syntax Error: expected factor, got " + getTokenName(currentToken.type));
+    unique_ptr<Node> ParsingTree::parseFactor() {
+        auto node = make_unique<Node>(FACTOR);
+        if (currentToken.type == intcon) node->addChild(expect(intcon));
+        else if (currentToken.type == realcon) node->addChild(expect(realcon));
+        else if (currentToken.type == charcon) node->addChild(expect(charcon));
+        else if (currentToken.type == string_tok) node->addChild(expect(string_tok));
+        else if (currentToken.type == lparent) {
+            node->addChild(expect(lparent));
+            node->addChild(parseExpression());
+            node->addChild(expect(rparent));
+        } else if (currentToken.type == notsy) {
+            node->addChild(expect(notsy));
+            node->addChild(parseFactor());
+        } else if (currentToken.type == ident) {
+            // ident bisa function call atau variable. Keduanya dimakan dari ident.
+            if (nextToken.type == lparent) node->addChild(parseProcedureFunctionCall());
+            else node->addChild(parseVariable());
+        } else {
+            throw runtime_error("Syntax Error: expected factor, got " + getTokenName(currentToken.type));
+        }
+        return node;
     }
-    return node;
-}
 
 unique_ptr<Node> ParsingTree::parseRelationalOperator() {
     auto node = make_unique<Node>(RELATIONAL_OPERATOR);
