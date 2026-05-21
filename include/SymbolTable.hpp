@@ -2,8 +2,10 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "Node.hpp"
-#include "AST_Tree.hpp"
+#include "ASTNode.hpp"
+
+class Node;     // Forward declaration murni untuk parameter fungsi exportToFile
+class ASTNode;  // Forward declaration murni untuk parameter fungsi exportToFile
 
 enum ObjectClass {
     OBJ_NONE = 0,
@@ -12,17 +14,6 @@ enum ObjectClass {
     OBJ_TYPE,
     OBJ_PROCEDURE,
     OBJ_FUNCTION
-};
-
-enum Identifier {
-    ID_NONE = 0,
-    ID_REAL = 26,
-    ID_INTEGER = 27,
-    ID_CHAR = 28,
-    ID_BOOLEAN = 29,
-    ID_STRING = 30,
-    ID_TRUE = 31,
-    ID_FALSE = 32
 };
 
 enum DataType {
@@ -70,24 +61,29 @@ private:
     std::vector<AtabEntry> atab;
     std::vector<BtabEntry> btab;
 
-    int currentLev = 0;
-    int currentBlock = 0;
-
-    DataType resolveTypeFromNode(Node* typeNode) const;
-    void traverseNode(Node* node, int lev);
+    void initializePredefinedIdentifiers();
 
 public:
     SymbolTable();
     ~SymbolTable() = default;
 
-    void initializePredefinedIdentifiers();
-
+    // API Publik Manajemen Data TAB
     int addEntry(const std::string& name, ObjectClass obj, DataType type, int ref, int nrm, int lev, int adr, int link = 0);
-    int buildArrayEntry(Node* arrayTypeNode);
     int lookupIndex(const std::string& name) const;
+    TabEntry getTabEntry(int index) const;
+    size_t getTabSize() const { return tab.size(); }
 
-    void buildFromNode(Node* cstRoot);
+    // API Publik Manajemen Data BTAB (Scope)
+    int pushNewBlock(int lastIdx);
+    void updateCurrentBlockLast(int lastIdx);
+    void incrementCurrentBlockVsze(int lastIdx);
+    void updateCurrentBlockLpar(int lparCount);
+    void resetBlockZero();
 
+    // API Publik Manajemen Data ATAB (Array)
+    int buildAtabEntryDirect(DataType xtyp, DataType etyp, int eref, int low, int high, int elsz, int size);
+
+    // Fungsi Cetak Laporan
     void exportToFile(const std::string& filepath, Node* cstRoot, ASTNode* astRoot) const;
     void printTab() const;
 };

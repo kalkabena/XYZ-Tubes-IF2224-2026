@@ -4,12 +4,12 @@ idx  id             obj         type     ref  nrm  lev  adr  link
 33   ArrayTest      4           0       0    1    0    0    0
 34   PI             1           2       0    1    0    0    0
 35   numbers        2           6       1    1    0    0    0
-36   i              2           1       0    1    0    0    0
+36   i              2           0       0    1    0    0    0
 
 --- ARRAY TABLE (ATAB) ---
 idx  xtyp   etyp   eref   low    high   elsz   size
 ---------------------------------------------------
-1    1      2      0      0      0      1      1
+1    1      0      0      0      0      1      1
 
 --- BLOCK TABLE (BTAB) ---
 idx  last  lpar  psze  vsze

@@ -6,6 +6,8 @@
 #include "parsingTree.hpp"
 #include "AST_Tree.hpp"
 #include "SymbolTable.hpp"
+#include "SemanticAnalyzer.hpp"
+
 
 using namespace std;
 
@@ -72,6 +74,7 @@ int main() {
     cout << "\n--- Parser Result ---\n" << endl;
 
     try {
+        // Fase 1: Parsing (CST Building)
         ParsingTree parser(lexerForParser);
         parser.build();
         parser.printToCLI();
@@ -83,11 +86,16 @@ int main() {
         AST_Tree astBuilder;
         unique_ptr<ASTNode> astRoot = astBuilder.build(cstRoot);
 
-        // Fase 3: Analisis Semantik & Generate Report Milestone 3
+        // Fase 3: Analisis Semantik & Pengisian Symbol Table
         cout << "\n--- Semantic Analysis Result ---\n" << endl;
         
         SymbolTable symTable;
-        symTable.buildFromNode(cstRoot); 
+        
+        // INSTANSIASI LOGIKA BARU KITA DI SINI
+        SemanticAnalyzer analyzer(symTable);
+        analyzer.analyze(cstRoot); // Otak analyzer berjalan menelusuri CST dan mengisi data ke symTable
+        
+        // Fase 4: Cetak Laporan dan Hasil Akhir
         symTable.printTab(); 
         string milestone3Path = "test/output/milestone_3.txt";
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
@@ -98,6 +106,5 @@ int main() {
         cerr << "Compiler Error: " << e.what() << endl;
         return 1;
     }
-
     return 0;
 }
