@@ -6,8 +6,8 @@ SRC_DIR     := src
 OBJ_DIR     := obj
 
 # The output file path located in the test folder
-LEXER_OUTPUT_FILE    := test/milestone_1/lexer_output.txt
-SYNTAX_OUTPUT_FILE   := test/milestone_2/syntax_output.txt
+LEXER_OUTPUT_FILE    := test/output/milestone_1.txt
+SYNTAX_OUTPUT_FILE   := test/output/milestone_2.txt
 SEMANTIC_OUTPUT_FILE := test/output/milestone_3.txt
 
 # Mencari seluruh file .cpp secara rekursif hingga ke dalam subdirektori
