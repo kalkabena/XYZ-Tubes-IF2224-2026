@@ -493,40 +493,48 @@ period
 --- SYMBOL TABLE (TAB) ---
 idx  id             obj         type     ref  nrm  lev  adr  link
 -----------------------------------------------------------------
-33   ArrayTest      4           0       0    1    0    0    0
-34   PI             1           2       0    1    0    0    0
-35   numbers        2           6       1    1    0    0    0
+33   Hello          4           0       0    1    0    0    0
+34   a              2           1       0    1    0    0    0
+35   b              2           1       0    1    0    0    0
 36   i              2           1       0    1    0    0    0
+37   AddTen         5           1       0    1    0    0    0
+38   x              2           1       0    1    1    0    0
 
 --- ARRAY TABLE (ATAB) ---
 idx  xtyp   etyp   eref   low    high   elsz   size
 ---------------------------------------------------
-1    1      2      0      0      0      1      1
 
 --- BLOCK TABLE (BTAB) ---
 idx  last  lpar  psze  vsze
 ---------------------------
 0    0     0     0     0
-1    36    0     0     2
+1    37    0     0     3
+2    38    1     0     1
 
 --- DECORATED AST ---
 └── BlockNode
     ├── BlockNode
-    │   └── VarDeclNode(Type: arraysy)
-    │       └── numbers
+    │   ├── VarDeclNode(Type: integer)
+    │   │   ├── a
+    │   │   ├── comma
+    │   │   ├── b
+    │   │   ├── comma
+    │   │   └── i
+    │   └── SubprogramDecl(AddTen)
+    │       └── [NULL BLOCK]
     └── BlockNode
         └── BlockNode
-            └── ForNode(var: i)
-                ├── ├── NumberNode(5)
-                ├── ├── NumberNode(1)
-                └── └── BlockNode
-                └──     └── BlockNode
-                └──         └── AssignNode
-                └──             ├── ArrayAccessNode(array: numbers)
-                └──             │   └── [NULL INDEX]
-                └──             └── BinOpNode(op: '')
-                └──                 ├── VariableNode(i)
-                └──                 └── VariableNode(PI)
+            ├── AssignNode
+            │   ├── VariableNode(a)
+            │   └── NumberNode(5)
+            ├── AssignNode
+            │   ├── VariableNode(b)
+            │   └── CallNode(func: 'AddTen')
+            │       └── VariableNode(a)
+            └── CallNode(func: 'writeln')
+                ├── StringNode('Result = ')
+                └── VariableNode(b)
+
 ```
 
 ### Pembagian Tugas:
