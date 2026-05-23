@@ -1,0 +1,18 @@
+program LogicTest;
+var
+  x, y: integer;
+
+  check: boolean;
+begin
+  x := 10;
+  y := 20;
+  
+  if (x <> y) and (x <= y) then
+  begin
+    check := true;
+  end
+  else
+  begin
+    check := false;
+  end;
+end.

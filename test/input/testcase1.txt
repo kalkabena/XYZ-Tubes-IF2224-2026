@@ -1,0 +1,15 @@
+program Hello;
+
+var
+  a, b, i: integer;
+
+function AddTen(x: integer): integer;
+begin
+  AddTen := x + 10;
+end;
+
+begin
+  a := 5;
+  b := AddTen(a);
+  writeln('Result = ', b);
+end.

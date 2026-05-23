@@ -1,0 +1,8 @@
+program CommentTest;
+{ Ini adalah komentar satu baris }
+(* Ini adalah komentar 
+   multi-baris Pascal klasik *)
+begin
+  writeln('Testing quotes: it''s working');
+  { Komentar di akhir program }
+end.
