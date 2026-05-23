@@ -1,6 +1,6 @@
 
 #include <bits/stdc++.h>
-#include "lexer.hpp"
+#include "lexer/lexer.hpp"
 using namespace std;
 
 Lexer::Lexer(const string& src) : source(src), pos(0), dfa(true), hasPeek(false) {

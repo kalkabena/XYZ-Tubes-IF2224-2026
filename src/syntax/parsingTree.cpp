@@ -1,4 +1,4 @@
-#include "parsingTree.hpp"
+#include "syntax/parsingTree.hpp"
 #include <fstream>
 #include <stdexcept>
 #include <sstream>

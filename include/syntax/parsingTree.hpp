@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Node.hpp"
-#include "lexer.hpp"
-#include "token.hpp"
+#include "syntax/Node.hpp"
+#include "lexer/lexer.hpp"
+#include "lexer/token.hpp"
 #include <memory>
 #include <iostream>
 #include <string>

@@ -1,4 +1,4 @@
-#include "ASTNode.hpp"
+#include "syntax/ASTNode.hpp"
 #include <stdexcept>
 using namespace std;
 void AssignNode::print(ostream& os, string prefix, bool isLast) const {

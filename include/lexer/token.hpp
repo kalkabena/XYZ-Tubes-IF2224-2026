@@ -1,5 +1,5 @@
 #pragma once
-#include "dfa_graph.hpp"
+#include "lexer/dfa_graph.hpp"
 
 #include <bits/stdc++.h>
 

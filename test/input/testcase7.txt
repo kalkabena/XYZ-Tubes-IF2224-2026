@@ -1,0 +1,91 @@
+program AdvancedCompilerTest;
+
+const
+  MaxItems = 100;
+  PiValue = 3.14159;
+  AppName = 'FarisCompiler';
+
+type
+  TIndex = 1..100;
+  TColor = (Red, Green, Blue);
+  
+  TPoint = record
+    X, Y: real;
+    Color: TColor;
+  end;
+
+  TPath = array[1..50] of TPoint;
+  TValues = array[1..10] of integer;
+
+var
+  GlobalPath: TPath;
+  Grid: TValues;
+  CurrentColor: TColor;
+  i: integer;
+  nextIdx: integer; 
+  TotalDistance: real;
+
+procedure InitGrid(StartVal: integer);
+var
+  r: integer;
+begin
+  for r := 1 to 10 do
+  begin
+    Grid[r] := StartVal * r;
+  end;
+end;
+
+function CalculateDist(P1, P2: TPoint): real;
+var
+  dx, dy: real;
+begin
+  dx := P1.X - P2.X;
+  dy := P1.Y - P2.Y;
+  CalculateDist := (dx * dx) + (dy * dy);
+end;
+
+begin
+  { 1. Inisialisasi Record di dalam Array }
+  for i := 1 to 50 do
+  begin
+    GlobalPath[i].X := i * 1.5;
+    GlobalPath[i].Y := i * 2.5;
+    
+    if (i MOD 2) == 0 then
+      GlobalPath[i].Color := Red
+    else
+      GlobalPath[i].Color := Blue;
+  end;
+
+  { 2. Pemanggilan Procedure dengan Parameter Aktual }
+  InitGrid(5);
+
+  { 3. Pemanggilan Function di dalam Ekspresi Matematika }
+  TotalDistance := 0.0;
+  i := 1;
+  while i < 50 do
+  begin
+    nextIdx := i + 1;
+    TotalDistance := TotalDistance + CalculateDist(GlobalPath[i], GlobalPath[nextIdx]);
+    i := i + 1;
+  end;
+
+  { 4. Evaluasi Case Statement }
+  CurrentColor := GlobalPath[10].Color;
+  case CurrentColor of
+    Red, Blue: 
+      begin
+        TotalDistance := TotalDistance * PiValue;
+      end;
+    Green: 
+      TotalDistance := 0.0;
+  end;
+
+  { 5. Repeat Until dengan Operator Divisi dan Relasional }
+  i := 10;
+  repeat
+    Grid[i] := Grid[i] div 2;
+    i := i - 1;
+  until i == 0;
+
+end.

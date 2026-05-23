@@ -1,12 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <filesystem>
-#include "lexer.hpp"
-#include "parsingTree.hpp"
-#include "AST_Tree.hpp"
-#include "SymbolTable.hpp"
-#include "SemanticAnalyzer.hpp"
+//#include <filesystem>
+#include "lexer/lexer.hpp"
+#include "syntax/parsingTree.hpp"
+#include "syntax/AST_Tree.hpp"
+#include "semantic/SymbolTable.hpp"
+#include "semantic/SemanticAnalyzer.hpp"
 
 
 using namespace std;
@@ -90,12 +90,15 @@ int main() {
         cout << "\n--- Semantic Analysis Result ---\n" << endl;
         
         SymbolTable symTable;
-        
-        // INSTANSIASI LOGIKA BARU KITA DI SINI
         SemanticAnalyzer analyzer(symTable);
-        analyzer.analyze(cstRoot); // Otak analyzer berjalan menelusuri CST dan mengisi data ke symTable
+        analyzer.analyze(cstRoot); 
+        if (analyzer.hasError()) {
+            analyzer.printErrors();
+            cout << "\nAnalisis semantik gagal\n";
+            return 1;
+        }
         
-        // Fase 4: Cetak Laporan dan Hasil Akhir
+        // Fase 4: Cetak Output
         symTable.printTab(); 
         string milestone3Path = "test/output/milestone_3.txt";
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
