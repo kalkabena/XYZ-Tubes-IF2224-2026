@@ -22,7 +22,6 @@ void SemanticAnalyzer::printErrors() const {
     }
 }
 
-// PERBAIKAN 1: Validasi duplikasi hanya pada level scope yang persis sama (mendukung shadowing lokal)
 bool SemanticAnalyzer::isDeclared(const std::string& name) const {
     int idx = symbolTable.lookupIndex(name);
     if (idx > 0) {
@@ -44,8 +43,6 @@ std::string SemanticAnalyzer::extractRawValue(const std::string& formattedLexeme
     }
     return formattedLexeme;
 }
-
-// PERBAIKAN 2: Kebal terhadap format token mentah seperti 'arraysy', 'integersy'
 DataType SemanticAnalyzer::resolveTypeFromNode(Node* typeNode) const {
     if (!typeNode) return TYPE_NONE;
 
@@ -128,7 +125,6 @@ void SemanticAnalyzer::analyze(Node* cstRoot) {
 void SemanticAnalyzer::traverseNode(Node* node, int lev) {
     if (!node) return;
 
-    // PERBAIKAN 3: Sinkronisasi currentLev agar isDeclared mendeteksi scope yang akurat
     int prevLev = currentLev;
     currentLev = lev;
 
@@ -229,58 +225,26 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
             while (i + 2 < node->children.size()) {
                 Node* idListNode = node->children[i].get();
                 Node* typeNode = node->children[i + 2].get();
-
-                std::string extractedTypeName;
-                if (typeNode) {
-                    std::vector<Node*> stack;
-                    stack.push_back(typeNode);
-                    while (!stack.empty() && extractedTypeName.empty()) {
-                        Node* cur = stack.back();
-                        stack.pop_back();
-                        if (!cur) continue;
-                        if (cur->type == TOKEN_NODE && cur->lexeme.find("ident(") != std::string::npos) {
-                            extractedTypeName = extractRawValue(cur->lexeme);
-                            break;
-                        }
-                        for (auto& chPtr : cur->children) {
-                            if (chPtr) stack.push_back(chPtr.get());
-                        }
-                    }
-                }
-
-                DataType resolvedType = TYPE_NONE;
+                DataType resolvedType = resolveTypeFromNode(typeNode);
                 int typeRef = 0;
-
-                if (!extractedTypeName.empty()) {
-                    int tIdx = symbolTable.lookupIndex(extractedTypeName);
-                    if (tIdx > 0) {
-                        auto entry = symbolTable.getTabEntry(tIdx);
-                        if (entry.obj == OBJ_TYPE) {
-                            resolvedType = entry.type;
-                            typeRef = entry.ref;
-                        }
+                if (resolvedType == TYPE_ARRAY) {
+                    Node* actualType = typeNode;
+                    if (actualType && !actualType->children.empty()) actualType = actualType->children[0].get();
+                    if (actualType && actualType->type == ARRAY_TYPE) {
+                        typeRef = buildArrayEntry(actualType);
                     }
                 }
-
-                if (resolvedType == TYPE_NONE) {
-                    resolvedType = resolveTypeFromNode(typeNode);
-                    if (resolvedType == TYPE_ARRAY) {
-                        Node* actualType = typeNode;
-                        if (actualType && !actualType->children.empty()) actualType = actualType->children[0].get();
-                        if (actualType && actualType->type == ARRAY_TYPE) {
-                            typeRef = buildArrayEntry(actualType);
-                        }
-                    }
-                }
-
-                if ((resolvedType == TYPE_ARRAY || resolvedType == TYPE_RECORD) && typeRef == 0 && !extractedTypeName.empty()) {
-                    int tIdx = symbolTable.lookupIndex(extractedTypeName);
+                if ((resolvedType == TYPE_ARRAY || resolvedType == TYPE_RECORD) && typeRef == 0) {
+                    std::string raw = typeNode->lexeme;
+                    if (raw.empty() && !typeNode->children.empty()) raw = typeNode->children[0]->lexeme;
+                    std::string tName = extractRawValue(raw);
+                    
+                    int tIdx = symbolTable.lookupIndex(tName);
                     if (tIdx > 0) {
                         auto entry = symbolTable.getTabEntry(tIdx);
                         if (entry.obj == OBJ_TYPE) typeRef = entry.ref;
                     }
                 }
-
                 for (auto& identNode : idListNode->children) {
                     if (identNode->type == TOKEN_NODE && identNode->lexeme.find("ident") != std::string::npos) {
                         std::string varName = extractRawValue(identNode->lexeme);
@@ -289,7 +253,6 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                             reportError("Variabel '" + varName + "' sudah dideklarasikan pada scope ini.");
                             continue;
                         }
-
                         int idx = symbolTable.addEntry(varName, OBJ_VARIABLE, resolvedType, typeRef, 1, lev, 0);
                         symbolTable.incrementCurrentBlockVsze(idx);
                     }
@@ -298,6 +261,8 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
             }
             break;
         }
+
+
         case FUNCTION_DECLARATION:
         case PROCEDURE_DECLARATION: {
             std::string subName = extractRawValue(node->children[1]->lexeme);
@@ -372,5 +337,5 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
         }
     }
 
-    currentLev = prevLev; // Kembalikan level lama setelah keluar rekursi
+    currentLev = prevLev; 
 }

@@ -5,8 +5,8 @@
 #include <sstream>
 
 SymbolTable::SymbolTable() {
-    atab.push_back({}); // Indeks ATAB dimulai dari 1 secara standar
-    btab.push_back({}); // Blok 0 untuk predefined identifier layer
+    atab.push_back({}); // Indeks ATAB 
+    btab.push_back({}); // Blok 0 
     initializePredefinedIdentifiers();
 }
 

@@ -90,17 +90,15 @@ int main() {
         cout << "\n--- Semantic Analysis Result ---\n" << endl;
         
         SymbolTable symTable;
-        
-        // INSTANSIASI LOGIKA BARU KITA DI SINI
         SemanticAnalyzer analyzer(symTable);
-        analyzer.analyze(cstRoot); // Otak analyzer berjalan menelusuri CST dan mengisi data ke symTable
+        analyzer.analyze(cstRoot); 
         if (analyzer.hasError()) {
             analyzer.printErrors();
             cout << "\nAnalisis semantik gagal\n";
             return 1;
         }
         
-        // Fase 4: Cetak Laporan dan Hasil Akhir
+        // Fase 4: Cetak Output
         symTable.printTab(); 
         string milestone3Path = "test/output/milestone_3.txt";
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());

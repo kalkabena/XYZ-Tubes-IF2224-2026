@@ -1,9 +1,14 @@
 #include "syntax/AST_Tree.hpp"
 #include <stdexcept>
-
+#include <cctype>
 
 unique_ptr<ASTNode> AST_Tree::build(Node* cstRoot) {
     if (!cstRoot) return nullptr;
+
+    if (cstRoot->type == INDEX_LIST) {
+        if (!cstRoot->children.empty()) return buildExpression(cstRoot->children[0].get());
+    }
+
     if (cstRoot->type == COMPOUND_STATEMENT || cstRoot->type == STATEMENT_LIST || 
         cstRoot->type == PROGRAM || cstRoot->type == BLOCK || cstRoot->type == CASE_BLOCK ||
         cstRoot->type == DECLARATION_PART) {
@@ -35,7 +40,7 @@ unique_ptr<ASTNode> AST_Tree::build(Node* cstRoot) {
 
     if (cstRoot->type == COMPONENT_VARIABLE) return buildComponentVariable(cstRoot);
 
-    // 6. Safety Net
+    // Safety Net
     for (auto& child : cstRoot->children) {
         auto res = build(child.get());
         if (res) return res; 
@@ -45,7 +50,7 @@ unique_ptr<ASTNode> AST_Tree::build(Node* cstRoot) {
 }
 
 unique_ptr<ASTNode> AST_Tree::buildComponentVariable(Node* cstNode) {
-    if (cstNode->children.size() >= 3 && cstNode->children[1]->lexeme == ".") {
+    if (cstNode->children.size() >= 3 && cstNode->children[1]->lexeme.find("period") != string::npos) {
         string recordName = extractVarName(cstNode->children[0].get());
         string fieldName = extractVarName(cstNode->children[2].get());
         return make_unique<FieldAccessNode>(recordName, fieldName);
@@ -55,28 +60,33 @@ unique_ptr<ASTNode> AST_Tree::buildComponentVariable(Node* cstNode) {
 }
 
 unique_ptr<ASTNode> AST_Tree::buildAssignment(Node* cstNode) {
-    // cstNode = ASSIGNMENT_STATEMENT
-    Node* varNode = cstNode->children[0].get(); // Node VARIABLE
-    Node* exprNode = cstNode->children[2].get(); // Node EXPRESSION
+    Node* varNode = cstNode->children[0].get(); 
+    Node* exprNode = cstNode->children[2].get(); 
 
-    unique_ptr<ASTNode> targetAST;
+    string baseName = extractVarName(varNode->children[0].get());
+    unique_ptr<ASTNode> targetAST = make_unique<VariableNode>(baseName);
 
-    // Cek apakah ada operasi array access / component variable di dalam VARIABLE
-    if (varNode->children.size() > 1 && varNode->children[1]->type == COMPONENT_VARIABLE) {
-        Node* compNode = varNode->children[1].get();
-        std::string arrayName = extractVarName(varNode->children[0].get());
-        
-        if (!compNode->children.empty() && compNode->children[0]->lexeme.find("lbrack") != std::string::npos) {
-            Node* indexListNode = compNode->children[1].get(); 
-            auto indexExpr = build(indexListNode); 
-            targetAST = make_unique<ArrayAccessNode>(arrayName, std::move(indexExpr));
+    for (size_t i = 1; i < varNode->children.size(); ++i) {
+        Node* compNode = varNode->children[i].get();
+        if (compNode->type == COMPONENT_VARIABLE && !compNode->children.empty()) {
+            Node* firstTok = compNode->children[0].get();
+            
+            if (firstTok->lexeme.find("lbrack") != string::npos && compNode->children.size() > 1) {
+                Node* idxList = compNode->children[1].get();
+                if (!idxList->children.empty()) {
+                    auto idxExpr = buildExpression(idxList->children[0].get());
+                    if (!idxExpr) idxExpr = make_unique<VariableNode>(extractVarName(idxList->children[0].get()));
+                    targetAST = make_unique<ArrayAccessNode>(baseName, move(idxExpr));
+                }
+            } else if (firstTok->lexeme.find("period") != string::npos && compNode->children.size() > 1) {
+                string field = extractVarName(compNode->children[1].get());
+                targetAST = make_unique<FieldAccessNode>(baseName, field);
+                baseName = baseName + "." + field; 
+            }
         }
-    } 
-    if (!targetAST) {
-        targetAST = make_unique<VariableNode>(extractVarName(varNode->children[0].get()));
     }
 
-    return make_unique<AssignNode>(std::move(targetAST), buildExpression(exprNode));
+    return make_unique<AssignNode>(move(targetAST), buildExpression(exprNode));
 }
 
 unique_ptr<ASTNode> AST_Tree::buildFunctionCall(Node* cstNode) {
@@ -94,8 +104,8 @@ unique_ptr<ASTNode> AST_Tree::buildFunctionCall(Node* cstNode) {
     }
     return make_unique<CallNode>(funcName, move(args));
 }
+
 unique_ptr<ASTNode> AST_Tree::buildIfStatement(Node* cstNode) {
-    
     unique_ptr<ASTNode> condition = buildExpression(cstNode->children[1].get());
     unique_ptr<ASTNode> thenBranch = build(cstNode->children[3].get());
     unique_ptr<ASTNode> elseBranch = nullptr;
@@ -106,6 +116,7 @@ unique_ptr<ASTNode> AST_Tree::buildIfStatement(Node* cstNode) {
 
     return make_unique<IfNode>(move(condition), move(thenBranch), move(elseBranch));
 }
+
 unique_ptr<ASTNode> AST_Tree::buildExpression(Node* cstNode) {
     if (!cstNode) return nullptr;
 
@@ -113,29 +124,80 @@ unique_ptr<ASTNode> AST_Tree::buildExpression(Node* cstNode) {
         if (cstNode->children.size() == 1) {
             return buildExpression(cstNode->children[0].get());
         }
-        string op = cstNode->children[1]->lexeme;
-        return make_unique<BinOpNode>(op, buildExpression(cstNode->children[0].get()), buildExpression(cstNode->children[2].get()));
+        
+        // Ekstraksi operator secara akurat menembus daun node
+        Node* opNode = cstNode->children[1].get();
+        string opStr = extractVarName(opNode); 
+        if (!opNode->children.empty()) {
+            string rawOp = opNode->children[0]->lexeme;
+            if (rawOp.find("plus") != string::npos) opStr = "+";
+            else if (rawOp.find("minus") != string::npos) opStr = "-";
+            else if (rawOp.find("times") != string::npos) opStr = "*";
+            else if (rawOp.find("div") != string::npos) opStr = "/";
+            else if (rawOp.find("mod") != string::npos) opStr = "MOD";
+            else if (rawOp.find("eql") != string::npos) opStr = "==";
+            else if (rawOp.find("neq") != string::npos) opStr = "<>";
+            else if (rawOp.find("gtr") != string::npos) opStr = ">";
+            else if (rawOp.find("geq") != string::npos) opStr = ">=";
+            else if (rawOp.find("lss") != string::npos) opStr = "<";
+            else if (rawOp.find("leq") != string::npos) opStr = "<=";
+            else if (rawOp.find("and") != string::npos) opStr = "AND";
+            else if (rawOp.find("or") != string::npos) opStr = "OR";
+        }
+        return make_unique<BinOpNode>(opStr, buildExpression(cstNode->children[0].get()), buildExpression(cstNode->children[2].get()));
     }
 
     if (cstNode->type == FACTOR) {
         Node* primary = cstNode->children[0].get();
-        if (primary->lexeme == "(") {
-            return buildExpression(cstNode->children[1].get());
+        
+        if (primary->lexeme.find("lparent") != string::npos) {
+            if (cstNode->children.size() > 1) return buildExpression(cstNode->children[1].get());
         }
-        if (primary->type == TOKEN_NODE || primary->type == VARIABLE) {
+    
+        if (primary->type == PROCEDURE_FUNCTION_CALL) {
+            return buildFunctionCall(primary);
+        }
+        if (primary->type == VARIABLE) {
+            string baseName = extractVarName(primary->children[0].get());
+            unique_ptr<ASTNode> currentVar = make_unique<VariableNode>(baseName);
+            
+            for (size_t i = 1; i < primary->children.size(); ++i) {
+                Node* comp = primary->children[i].get();
+                if (comp->type == COMPONENT_VARIABLE && !comp->children.empty()) {
+                    Node* firstTok = comp->children[0].get();
+                    if (firstTok->lexeme.find("lbrack") != string::npos && comp->children.size() > 1) {
+                        Node* idxList = comp->children[1].get();
+                        if (!idxList->children.empty()) {
+                            auto idxExpr = buildExpression(idxList->children[0].get());
+                            if (!idxExpr) idxExpr = make_unique<VariableNode>(extractVarName(idxList->children[0].get()));
+                            currentVar = make_unique<ArrayAccessNode>(baseName, move(idxExpr));
+                        }
+                    } else if (firstTok->lexeme.find("period") != string::npos && comp->children.size() > 1) {
+                        string field = extractVarName(comp->children[1].get());
+                        currentVar = make_unique<FieldAccessNode>(baseName, field);
+                        baseName = baseName + "." + field; 
+                    }
+                }
+            }
+            return currentVar;
+        }
+
+        if (primary->type == TOKEN_NODE) {
             string rawVal = extractVarName(primary);
-            if (primary->lexeme.find("string_tok") == 0 || (!rawVal.empty() && rawVal[0] == '\'')) {
+            if (primary->lexeme.find("string_tok") != string::npos || (!rawVal.empty() && rawVal[0] == '\'')) {
                 return make_unique<StringNode>(rawVal);
             }
-            if (primary->lexeme.find("intcon") == 0 || isdigit(rawVal[0])) {
+            if (primary->lexeme.find("intcon") != string::npos || primary->lexeme.find("realcon") != string::npos || (!rawVal.empty() && isdigit(rawVal[0]))) {
                 return make_unique<NumberNode>(rawVal);
             }
             return make_unique<VariableNode>(rawVal);
         }
+        
         return buildExpression(primary);
     }
     return nullptr;
 }
+
 string AST_Tree::extractVarName(Node* cstNode) {
     if (!cstNode) return "";
 
@@ -155,6 +217,7 @@ string AST_Tree::extractVarName(Node* cstNode) {
 
     return "";
 }
+
 unique_ptr<ASTNode> AST_Tree::buildWhileStatement(Node* cstNode) {
     auto cond = buildExpression(cstNode->children[1].get());
     auto body = build(cstNode->children[3].get());
@@ -213,6 +276,7 @@ unique_ptr<ASTNode> AST_Tree::buildFunctionDeclaration(Node* cstNode) {
     unique_ptr<ASTNode> block = build(cstNode->children.back().get());
     return make_unique<SubprogramDeclNode>(name, move(block));
 }
+
 unique_ptr<ASTNode> AST_Tree::buildProcedureDeclaration(Node* cstNode) {
     if (!cstNode || cstNode->children.empty()) return nullptr;
 
@@ -231,6 +295,7 @@ unique_ptr<ASTNode> AST_Tree::buildProcedureDeclaration(Node* cstNode) {
 
     return make_unique<SubprogramDeclNode>(name, build(blockNode));
 }
+
 unique_ptr<ASTNode> AST_Tree::buildFieldAccess(Node* cstNode) {
     string recordName = extractVarName(cstNode->children[0].get());
     string fieldName = extractVarName(cstNode->children[2].get());
