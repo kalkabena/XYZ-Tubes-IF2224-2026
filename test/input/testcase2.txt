@@ -1,18 +1,10 @@
-program LogicTest;
+program ValidProgram;
 var
-  x, y: integer;
-
-  check: boolean;
+  a, b: integer;
+  res: real;
 begin
-  x := 10;
-  y := 20;
-  
-  if (x <> y) and (x <= y) then
-  begin
-    check := true;
-  end
-  else
-  begin
-    check := false;
-  end;
+  a := 10;
+  b := 20;
+  res := a + b;
+  writeln('Hasilnya adalah');
 end.

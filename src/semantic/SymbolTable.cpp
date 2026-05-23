@@ -240,3 +240,13 @@ void SymbolTable::printTab() const {
     }
     std::cout << "\n";
 }
+
+AtabEntry SymbolTable::getAtabEntry(int index) const {
+    int actualIndex = index - 1; 
+
+    if (actualIndex >= 0 && actualIndex < static_cast<int>(atab.size())) {
+        return atab[actualIndex];
+    }
+    
+    return AtabEntry{TYPE_NONE, TYPE_NONE, 0, 0, 0, 0, 0};
+}

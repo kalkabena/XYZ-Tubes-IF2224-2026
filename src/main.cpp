@@ -86,13 +86,14 @@ int main() {
         SymbolTable symTable;
         SemanticAnalyzer analyzer(symTable);
         analyzer.analyze(cstRoot); 
+        analyzer.analyzeAST(astRoot.get());
         
-        // Penanganan Error Semantik secara Absolut
+        // Error Handling
         if (analyzer.hasError()) {
             analyzer.printErrors();
             cout << "\nAnalisis semantik gagal\n";
 
-            // Tangkap dan tulis log kegagalan semantik ke output txt
+            // Generate Output
             ofstream out3("test/output/milestone_3.txt", ios::trunc);
             if (out3.is_open()) {
                 for (const auto& err : analyzer.getErrors()) {
@@ -107,7 +108,7 @@ int main() {
             return 1;
         }
         
-        // Fase 4: Cetak Output (Jika tidak ada error)
+        // Fase 4: Print Output
         symTable.printTab(); 
         string milestone3Path = "test/output/milestone_3.txt";
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());

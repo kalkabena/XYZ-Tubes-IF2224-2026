@@ -16,6 +16,8 @@ private:
     DataType resolveTypeFromNode(Node* typeNode) const;
     std::string extractRawValue(const std::string& formattedLexeme) const;
     int buildArrayEntry(Node* arrayTypeNode);
+    DataType getExprType(ASTNode* exprNode);
+    void checkTypeCompatibility(ASTNode* astNode);
 
 public:
     SemanticAnalyzer(SymbolTable& table);
@@ -29,4 +31,6 @@ public:
 
     // Titik masuk utama untuk menganalisis pohon sintaksis konkrit (CST)
     void analyze(Node* cstRoot);
+    // Titik masuk untuk analisis Semantic Type Checking pada AST
+    void analyzeAST(ASTNode* astRoot);
 };

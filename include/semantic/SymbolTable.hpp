@@ -86,4 +86,7 @@ public:
     // Fungsi Cetak Laporan
     void exportToFile(const std::string& filepath, Node* cstRoot, ASTNode* astRoot) const;
     void printTab() const;
+
+    // API Publik Manajemen Data ATAB (Array)
+    AtabEntry getAtabEntry(int index) const; // Tambahkan baris ini
 };

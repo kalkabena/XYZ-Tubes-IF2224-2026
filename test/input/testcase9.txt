@@ -1,0 +1,8 @@
+program UndeclaredID;
+var
+  x: integer;
+begin
+  x := 10;
+  y := 20; 
+  writeln(y);
+end.

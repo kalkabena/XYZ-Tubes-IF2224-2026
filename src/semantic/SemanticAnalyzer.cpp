@@ -339,3 +339,150 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
 
     currentLev = prevLev; 
 }
+
+void SemanticAnalyzer::analyzeAST(ASTNode* astRoot) {
+    if (!astRoot) return;
+    checkTypeCompatibility(astRoot);
+}
+
+DataType SemanticAnalyzer::getExprType(ASTNode* exprNode) {
+    if (!exprNode) return TYPE_NONE;
+
+    if (auto numNode = dynamic_cast<NumberNode*>(exprNode)) {
+        if (numNode->value.find('.') != std::string::npos) return TYPE_REAL;
+        return TYPE_INTEGER;
+    }
+    
+    if (auto strNode = dynamic_cast<StringNode*>(exprNode)) {
+        return TYPE_STRING;
+    }
+
+    if (auto varNode = dynamic_cast<VariableNode*>(exprNode)) {
+        int idx = symbolTable.lookupIndex(varNode->name);
+        if (idx > 0) {
+            auto entry = symbolTable.getTabEntry(idx);
+            if (entry.obj == OBJ_VARIABLE || entry.obj == OBJ_FUNCTION || entry.obj == OBJ_CONSTANT) {
+                return entry.type;
+            }
+        }
+        reportError("Identifier '" + varNode->name + "' belum dideklarasikan atau tidak valid di konteks ini.");
+        return TYPE_NONE;
+    }
+
+    if (auto arrNode = dynamic_cast<ArrayAccessNode*>(exprNode)) {
+        int idx = symbolTable.lookupIndex(arrNode->arrayName);
+        if (idx > 0) {
+            auto entry = symbolTable.getTabEntry(idx);
+            if (entry.type == TYPE_ARRAY && entry.ref > 0) {
+                return symbolTable.getAtabEntry(entry.ref).etyp;
+            }
+        }
+        reportError("Akses array ilegal pada '" + arrNode->arrayName + "'.");
+        return TYPE_NONE;
+    }
+
+    if (auto fieldNode = dynamic_cast<FieldAccessNode*>(exprNode)) {
+        // Implementasi sederhana: Asumsikan lookup nama record bisa memisahkan dot notation.
+        // Untuk arsitektur ini, kita coba temukan parent recordnya
+        size_t dotPos = fieldNode->recordName.find('.');
+        std::string baseRec = (dotPos != std::string::npos) ? fieldNode->recordName.substr(0, dotPos) : fieldNode->recordName;
+        int idx = symbolTable.lookupIndex(baseRec);
+        if (idx <= 0) reportError("Record '" + baseRec + "' belum dideklarasikan.");
+        return TYPE_NONE;
+    }
+
+    if (auto binOp = dynamic_cast<BinOpNode*>(exprNode)) {
+        DataType leftType = getExprType(binOp->left.get());
+        DataType rightType = getExprType(binOp->right.get());
+        if (binOp->op == "==" || binOp->op == "<>" || binOp->op == "<" || 
+            binOp->op == "<=" || binOp->op == ">" || binOp->op == ">=") {
+            return TYPE_BOOLEAN;
+        }
+        if (binOp->op == "AND" || binOp->op == "OR") {
+            if (leftType != TYPE_BOOLEAN || rightType != TYPE_BOOLEAN) {
+                reportError("Operator '" + binOp->op + "' membutuhkan operand Boolean.");
+            }
+            return TYPE_BOOLEAN;
+        }
+        if (binOp->op == "MOD" || binOp->op == "div") {
+            if (leftType != TYPE_INTEGER || rightType != TYPE_INTEGER) {
+                reportError("Operator '" + binOp->op + "' membutuhkan operand Integer.");
+            }
+            return TYPE_INTEGER;
+        }
+        
+        if (binOp->op == "/") {
+            return TYPE_REAL;
+        }
+
+        if (binOp->op == "+" || binOp->op == "-" || binOp->op == "*") {
+            if (leftType == TYPE_REAL || rightType == TYPE_REAL) return TYPE_REAL;
+            return TYPE_INTEGER;
+        }
+    }
+    
+    if (auto callNode = dynamic_cast<CallNode*>(exprNode)) {
+        int idx = symbolTable.lookupIndex(callNode->functionName); // Diperbaiki
+        if (idx > 0) return symbolTable.getTabEntry(idx).type;
+    }
+
+    return TYPE_NONE;
+}
+
+void SemanticAnalyzer::checkTypeCompatibility(ASTNode* astNode) {
+    if (!astNode) return;
+
+    if (auto blockNode = dynamic_cast<BlockNode*>(astNode)) {
+        for (auto& stmt : blockNode->statements) {
+            checkTypeCompatibility(stmt.get());
+        }
+    }
+    else if (auto assignNode = dynamic_cast<AssignNode*>(astNode)) {
+        DataType targetType = getExprType(assignNode->targetVariable.get()); 
+        DataType valType = getExprType(assignNode->value.get());
+        
+        if (targetType != TYPE_NONE && valType != TYPE_NONE) {
+            if (targetType == TYPE_REAL && valType == TYPE_INTEGER) {
+            } 
+            else if (targetType == TYPE_RECORD || valType == TYPE_RECORD || 
+                     targetType == TYPE_ARRAY || valType == TYPE_ARRAY) {
+            } 
+            else if (targetType != valType) {
+                reportError("Type mismatch dalam assignment. Tidak dapat menetapkan nilai ke target.");
+            }
+        }
+    }
+    else if (auto ifNode = dynamic_cast<IfNode*>(astNode)) {
+        DataType condType = getExprType(ifNode->condition.get());
+        if (condType != TYPE_BOOLEAN && condType != TYPE_NONE) {
+            reportError("Kondisi pada If-Statement harus berupa tipe Boolean.");
+        }
+        checkTypeCompatibility(ifNode->thenBranch.get());
+        if (ifNode->elseBranch) checkTypeCompatibility(ifNode->elseBranch.get());
+    }
+    else if (auto whileNode = dynamic_cast<WhileNode*>(astNode)) {
+        DataType condType = getExprType(whileNode->condition.get());
+        if (condType != TYPE_BOOLEAN && condType != TYPE_NONE) {
+            reportError("Kondisi pada While-Statement harus berupa tipe Boolean.");
+        }
+        checkTypeCompatibility(whileNode->body.get());
+    }
+    else if (auto repeatNode = dynamic_cast<RepeatNode*>(astNode)) {
+        checkTypeCompatibility(repeatNode->body.get());
+        DataType condType = getExprType(repeatNode->condition.get());
+        if (condType != TYPE_BOOLEAN && condType != TYPE_NONE) {
+            reportError("Kondisi pada Repeat-Statement harus berupa tipe Boolean.");
+        }
+    }
+    else if (auto forNode = dynamic_cast<ForNode*>(astNode)) {
+        DataType startType = getExprType(forNode->start.get());
+        DataType endType = getExprType(forNode->end.get());
+        if (startType != TYPE_INTEGER || endType != TYPE_INTEGER) {
+            reportError("Batas perulangan For-Statement harus berupa tipe Integer.");
+        }
+        checkTypeCompatibility(forNode->body.get());
+    }
+    else if (auto subprogNode = dynamic_cast<SubprogramDeclNode*>(astNode)) {
+        checkTypeCompatibility(subprogNode->block.get());
+    }
+}

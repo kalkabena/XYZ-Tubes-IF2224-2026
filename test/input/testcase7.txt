@@ -4,10 +4,13 @@ const
   MaxItems = 100;
   PiValue = 3.14159;
   AppName = 'FarisCompiler';
+  Red = 1;
+  Green = 2;
+  Blue = 3;
 
 type
   TIndex = 1..100;
-  TColor = (Red, Green, Blue);
+  TColor = integer;
   
   TPoint = record
     X, Y: real;

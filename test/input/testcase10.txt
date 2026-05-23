@@ -1,0 +1,8 @@
+program TypeMismatchAssign;
+var
+  angka: integer;
+  teks: string;
+begin
+  teks := 'Kompilator Arion';
+  angka := teks; 
+end.
