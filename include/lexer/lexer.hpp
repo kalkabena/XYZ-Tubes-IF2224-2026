@@ -1,6 +1,6 @@
 #pragma once
-#include "token.hpp"
-#include "dfa_graph.hpp"
+#include "lexer/token.hpp"
+#include "lexer/dfa_graph.hpp"
 
 #include <bits/stdc++.h>
 

@@ -1,8 +1,13 @@
-#include "SemanticAnalyzer.hpp"
+#include "semantic/SemanticAnalyzer.hpp"
 #include <stdexcept>
+#include <fstream>
+#include <iostream>
+
+static const bool DEBUG_SEMANTIC = false;
 
 SemanticAnalyzer::SemanticAnalyzer(SymbolTable& table) 
     : symbolTable(table), currentLev(0), currentBlock(0) {}
+
 void SemanticAnalyzer::reportError(const std::string& message) {
     errors.push_back("Semantic Error: " + message);
 }
@@ -17,13 +22,20 @@ void SemanticAnalyzer::printErrors() const {
     }
 }
 
+// PERBAIKAN 1: Validasi duplikasi hanya pada level scope yang persis sama (mendukung shadowing lokal)
 bool SemanticAnalyzer::isDeclared(const std::string& name) const {
-    return symbolTable.lookupIndex(name) > 0;
+    int idx = symbolTable.lookupIndex(name);
+    if (idx > 0) {
+        auto entry = symbolTable.getTabEntry(idx);
+        return entry.lev == currentLev; 
+    }
+    return false;
 }
 
 const std::vector<std::string>& SemanticAnalyzer::getErrors() const {
     return errors;
 }
+
 std::string SemanticAnalyzer::extractRawValue(const std::string& formattedLexeme) const {
     size_t start = formattedLexeme.find('(');
     size_t end = formattedLexeme.rfind(')');
@@ -33,32 +45,38 @@ std::string SemanticAnalyzer::extractRawValue(const std::string& formattedLexeme
     return formattedLexeme;
 }
 
+// PERBAIKAN 2: Kebal terhadap format token mentah seperti 'arraysy', 'integersy'
 DataType SemanticAnalyzer::resolveTypeFromNode(Node* typeNode) const {
     if (!typeNode) return TYPE_NONE;
+
+    if (typeNode->type == ARRAY_TYPE) return TYPE_ARRAY;
+    if (typeNode->type == RECORD_TYPE) return TYPE_RECORD;
 
     if (!typeNode->children.empty()) {
         if (typeNode->children[0]->type == ARRAY_TYPE) return TYPE_ARRAY;
         if (typeNode->children[0]->type == RECORD_TYPE) return TYPE_RECORD;
     }
 
-    std::string typeName = extractRawValue(typeNode->lexeme);
+    std::string raw = typeNode->lexeme;
+    if (raw.empty() && !typeNode->children.empty()) {
+        raw = typeNode->children[0]->lexeme;
+    }
 
-    if (typeName == "integer") return TYPE_INTEGER;
-    if (typeName == "real")    return TYPE_REAL;
-    if (typeName == "char")    return TYPE_CHAR;
-    if (typeName == "boolean") return TYPE_BOOLEAN;
-    if (typeName == "string")  return TYPE_STRING;
+    std::string typeName = extractRawValue(raw);
 
-    if (typeName == "array")  return TYPE_ARRAY;
-    if (typeName == "record") return TYPE_RECORD;
+    if (typeName.find("integer") != std::string::npos) return TYPE_INTEGER;
+    if (typeName.find("real") != std::string::npos)    return TYPE_REAL;
+    if (typeName.find("char") != std::string::npos)    return TYPE_CHAR;
+    if (typeName.find("boolean") != std::string::npos) return TYPE_BOOLEAN;
+    if (typeName.find("string") != std::string::npos)  return TYPE_STRING;
+    if (typeName.find("array") != std::string::npos)   return TYPE_ARRAY;
+    if (typeName.find("record") != std::string::npos)  return TYPE_RECORD;
 
-    // Panggil lookupIndex via referensi symbolTable
     int index = symbolTable.lookupIndex(typeName);
     if (index > 0) {
-        // Asumsi lu sudah menyediakan fungsi publik getTabEntry(index) di SymbolTable
         auto entry = symbolTable.getTabEntry(index);
         if (entry.obj == OBJ_TYPE) {
-            return entry.type; 
+            return entry.type;
         }
     }
 
@@ -87,8 +105,8 @@ int SemanticAnalyzer::buildArrayEntry(Node* arrayTypeNode) {
         }
     }
 
-    if (lowBound > highBound) {
-    reportError("Range array tidak valid karena batas bawah lebih besar dari batas atas.");
+    if (lowBound > highBound && boundsNode->type == RANGE) {
+        reportError("Range array tidak valid karena batas bawah lebih besar dari batas atas.");
     }
 
     DataType elType = resolveTypeFromNode(elementTypeNode);
@@ -110,6 +128,10 @@ void SemanticAnalyzer::analyze(Node* cstRoot) {
 void SemanticAnalyzer::traverseNode(Node* node, int lev) {
     if (!node) return;
 
+    // PERBAIKAN 3: Sinkronisasi currentLev agar isDeclared mendeteksi scope yang akurat
+    int prevLev = currentLev;
+    currentLev = lev;
+
     switch (node->type) {
         case PROGRAM: {
             std::string progName = "unknown";
@@ -120,7 +142,7 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
             }
             
             int idx = symbolTable.addEntry(progName, OBJ_PROCEDURE, TYPE_NONE, 0, 1, lev, 0);
-            currentBlock = symbolTable.pushNewBlock(idx); // Kelola via SymbolTable
+            currentBlock = symbolTable.pushNewBlock(idx); 
 
             for (auto& child : node->children) {
                 traverseNode(child.get(), lev);
@@ -136,7 +158,7 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                 if (idNode->type == TOKEN_NODE) {
                     std::string constName = extractRawValue(idNode->lexeme);
                    if (isDeclared(constName)) {
-                        reportError("Konstanta '" + constName + "' sudah dideklarasikan sebelumnya.");
+                        reportError("Konstanta '" + constName + "' sudah dideklarasikan pada scope ini.");
                         i += 4;
                         continue;
                     }
@@ -166,13 +188,23 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                 if (idNode->type == TOKEN_NODE) {
                     std::string typeName = extractRawValue(idNode->lexeme);
                     if (isDeclared(typeName)) {
-                        reportError("Tipe data '" + typeName + "' sudah dideklarasikan sebelumnya.");
+                        reportError("Tipe data '" + typeName + "' sudah dideklarasikan pada scope ini.");
                         i += 4;
                         continue;
                     }
+
                     DataType resolvedType = resolveTypeFromNode(typeNode);
+
                     if (resolvedType == TYPE_NONE) {
-                        reportError("Tipe data tidak dikenali pada deklarasi variabel.");
+                        if (typeNode->type == RANGE || (!typeNode->children.empty() && typeNode->children[0]->type == RANGE)) {
+                            resolvedType = TYPE_INTEGER; 
+                        } else if (typeNode->type == ENUMERATED || (!typeNode->children.empty() && typeNode->children[0]->type == ENUMERATED)) {
+                            resolvedType = TYPE_INTEGER; 
+                        }
+                    }
+
+                    if (resolvedType == TYPE_NONE) {
+                        reportError("Tipe data '" + typeName + "' tidak dikenali.");
                     }
                     int typeRef = 0;
 
@@ -184,7 +216,6 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                     if (resolvedType == TYPE_ARRAY && actualType->type == ARRAY_TYPE) {
                         typeRef = buildArrayEntry(actualType);
                     }
-                    
 
                     int idx = symbolTable.addEntry(typeName, OBJ_TYPE, resolvedType, typeRef, 1, lev, 0);
                     symbolTable.updateCurrentBlockLast(idx);
@@ -194,27 +225,56 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
             break;
         }
         case VAR_DECLARATION: {
-            size_t i = 1; 
+            size_t i = 1;
             while (i + 2 < node->children.size()) {
                 Node* idListNode = node->children[i].get();
-                Node* typeNode = node->children[i+2].get(); 
-                
-                DataType resolvedType = resolveTypeFromNode(typeNode);
-                int typeRef = 0;
-                
-                Node* actualType = typeNode;
-                if (!typeNode->children.empty()) {
-                    actualType = typeNode->children[0].get();
+                Node* typeNode = node->children[i + 2].get();
+
+                std::string extractedTypeName;
+                if (typeNode) {
+                    std::vector<Node*> stack;
+                    stack.push_back(typeNode);
+                    while (!stack.empty() && extractedTypeName.empty()) {
+                        Node* cur = stack.back();
+                        stack.pop_back();
+                        if (!cur) continue;
+                        if (cur->type == TOKEN_NODE && cur->lexeme.find("ident(") != std::string::npos) {
+                            extractedTypeName = extractRawValue(cur->lexeme);
+                            break;
+                        }
+                        for (auto& chPtr : cur->children) {
+                            if (chPtr) stack.push_back(chPtr.get());
+                        }
+                    }
                 }
 
-                if (resolvedType == TYPE_ARRAY && actualType->type == ARRAY_TYPE) {
-                    typeRef = buildArrayEntry(actualType);
-                } else if (resolvedType == TYPE_ARRAY || resolvedType == TYPE_RECORD) {
-                    std::string tName = extractRawValue(typeNode->lexeme);
-                    if (tName.empty() && !typeNode->children.empty()) {
-                        tName = extractRawValue(typeNode->children[0]->lexeme);
+                DataType resolvedType = TYPE_NONE;
+                int typeRef = 0;
+
+                if (!extractedTypeName.empty()) {
+                    int tIdx = symbolTable.lookupIndex(extractedTypeName);
+                    if (tIdx > 0) {
+                        auto entry = symbolTable.getTabEntry(tIdx);
+                        if (entry.obj == OBJ_TYPE) {
+                            resolvedType = entry.type;
+                            typeRef = entry.ref;
+                        }
                     }
-                    int tIdx = symbolTable.lookupIndex(tName);
+                }
+
+                if (resolvedType == TYPE_NONE) {
+                    resolvedType = resolveTypeFromNode(typeNode);
+                    if (resolvedType == TYPE_ARRAY) {
+                        Node* actualType = typeNode;
+                        if (actualType && !actualType->children.empty()) actualType = actualType->children[0].get();
+                        if (actualType && actualType->type == ARRAY_TYPE) {
+                            typeRef = buildArrayEntry(actualType);
+                        }
+                    }
+                }
+
+                if ((resolvedType == TYPE_ARRAY || resolvedType == TYPE_RECORD) && typeRef == 0 && !extractedTypeName.empty()) {
+                    int tIdx = symbolTable.lookupIndex(extractedTypeName);
                     if (tIdx > 0) {
                         auto entry = symbolTable.getTabEntry(tIdx);
                         if (entry.obj == OBJ_TYPE) typeRef = entry.ref;
@@ -224,9 +284,9 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                 for (auto& identNode : idListNode->children) {
                     if (identNode->type == TOKEN_NODE && identNode->lexeme.find("ident") != std::string::npos) {
                         std::string varName = extractRawValue(identNode->lexeme);
-                        
+
                         if (isDeclared(varName)) {
-                            reportError("Variabel '" + varName + "' sudah dideklarasikan sebelumnya.");
+                            reportError("Variabel '" + varName + "' sudah dideklarasikan pada scope ini.");
                             continue;
                         }
 
@@ -234,7 +294,7 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                         symbolTable.incrementCurrentBlockVsze(idx);
                     }
                 }
-                i += 4; 
+                i += 4;
             }
             break;
         }
@@ -301,7 +361,7 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                 if (child->type == BLOCK) traverseNode(child.get(), lev + 1);
             }
 
-            currentBlock = savedBlock; // Amankan kembali konteks block parent
+            currentBlock = savedBlock; 
             break;
         }
         default: {
@@ -311,4 +371,6 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
             break;
         }
     }
+
+    currentLev = prevLev; // Kembalikan level lama setelah keluar rekursi
 }

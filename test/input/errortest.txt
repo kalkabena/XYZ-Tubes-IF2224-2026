@@ -1,0 +1,7 @@
+program ErrorTest;
+var
+  a: integer;
+  a: real;
+begin
+  a := 10;
+end.

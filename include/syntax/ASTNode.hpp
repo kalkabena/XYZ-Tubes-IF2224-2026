@@ -1,6 +1,6 @@
 #pragma once
 #include <bits/stdc++.h>
-#include "Node.hpp"
+#include "syntax/Node.hpp"
 
 using namespace std;
 

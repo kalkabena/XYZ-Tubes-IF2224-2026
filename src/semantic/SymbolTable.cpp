@@ -1,4 +1,4 @@
-#include "SymbolTable.hpp"
+#include "semantic/SymbolTable.hpp"
 #include <stdexcept>
 #include <iomanip>
 #include <fstream>

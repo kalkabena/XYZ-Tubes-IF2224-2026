@@ -2,11 +2,11 @@
 #include <fstream>
 #include <sstream>
 //#include <filesystem>
-#include "lexer.hpp"
-#include "parsingTree.hpp"
-#include "AST_Tree.hpp"
-#include "SymbolTable.hpp"
-#include "SemanticAnalyzer.hpp"
+#include "lexer/lexer.hpp"
+#include "syntax/parsingTree.hpp"
+#include "syntax/AST_Tree.hpp"
+#include "semantic/SymbolTable.hpp"
+#include "semantic/SemanticAnalyzer.hpp"
 
 
 using namespace std;

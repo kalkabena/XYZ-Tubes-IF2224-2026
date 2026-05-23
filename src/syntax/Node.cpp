@@ -1,4 +1,4 @@
-#include "Node.hpp"
+#include "syntax/Node.hpp"
 
 void Node::addChild(unique_ptr<Node> child) {
     if (child) children.push_back(std::move(child));

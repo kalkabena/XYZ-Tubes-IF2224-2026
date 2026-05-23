@@ -6,13 +6,13 @@ SRC_DIR     := src
 OBJ_DIR     := obj
 
 # The output file path located in the test folder
-LEXER_OUTPUT_FILE := test/milestone_1/lexer_output.txt
-SYNTAX_OUTPUT_FILE := test/milestone_2/syntax_output.txt
+LEXER_OUTPUT_FILE    := test/milestone_1/lexer_output.txt
+SYNTAX_OUTPUT_FILE   := test/milestone_2/syntax_output.txt
+SEMANTIC_OUTPUT_FILE := test/output/milestone_3.txt
 
-
-
-SRCS        := $(wildcard $(SRC_DIR)/*.cpp)
-OBJS        := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+# Mencari seluruh file .cpp secara rekursif hingga ke dalam subdirektori
+SRCS        := $(shell find $(SRC_DIR) -name '*.cpp')
+OBJS        := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
 all: $(TARGET)
 
@@ -22,18 +22,16 @@ run: $(TARGET)
 $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+# Aturan kompilasi dengan pembentukan subdirektori dinamis di dalam obj/
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-# Clean now explicitly removes the output from the test folder
+# Clean removes the output from the test folder and build artifacts
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LEXER_OUTPUT_FILE) $(SYNTAX_OUTPUT_FILE)
-
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LEXER_OUTPUT_FILE) $(SYNTAX_OUTPUT_FILE) $(SEMANTIC_OUTPUT_FILE)
 
 .PHONY: all clean run

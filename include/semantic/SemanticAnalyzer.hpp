@@ -1,6 +1,6 @@
 #pragma once
-#include "Node.hpp"
-#include "SymbolTable.hpp"
+#include "syntax/Node.hpp"
+#include "semantic/SymbolTable.hpp"
 #include <string>
 #include <vector>
 

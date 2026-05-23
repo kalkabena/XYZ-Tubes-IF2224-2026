@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "ASTNode.hpp"
+#include "syntax/ASTNode.hpp"
 
 class Node;     // Forward declaration murni untuk parameter fungsi exportToFile
 class ASTNode;  // Forward declaration murni untuk parameter fungsi exportToFile
