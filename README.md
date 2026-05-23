@@ -294,6 +294,34 @@ Jika tidak menggunakan Makefile:
 g++ -std=c++17 -Iinclude src/lexer.cpp src/main.cpp -o bin/compiler
 ```
 
+#### Panduan Menjalankan Program (Alur Kompilasi & Input/Output):
+
+**1. Kompilasi & Menjalankan Program (Compile & Run):**
+Gunakan perintah `make` untuk melakukan proses *build* sekaligus langsung mengeksekusi kompilator:
+```bash
+make run
+```
+Atau jika Anda hanya ingin menjalankan *executable* yang sudah di-*build* sebelumnya secara manual:
+```bash
+./bin/compiler
+```
+
+**2. Memasukkan File Input (Input):**
+Saat program berjalan, Anda akan disambut dengan *prompt* interaktif di CLI seperti berikut:
+`Enter input file path (or 'q' to quit):`
+
+Silakan ketikkan *path* (rute) menuju file yang ingin diuji (file bahasa Arion/Pascal berekstensi `.txt`) yang sudah Anda siapkan. Misalnya:
+`test/input/testcase1.txt`
+Lalu tekan **Enter**.
+
+**3. Melihat Hasil Output:**
+Setelah proses kompilasi sukses dieksekusi, hasil dari tahapan Lexer, Parser (Parse Tree), dan Analisis Semantik (Symbol Table & AST) akan **langsung ditampilkan di layar CLI Anda**.
+
+Selain dicetak di layar, program secara otomatis mengekspor/menyimpan salinan *log* output tersebut ke dalam folder `test/output/`. Anda dapat memeriksa hasil lengkapnya pada:
+- `test/output/milestone_1.txt` *(Hasil Token Lexer)*
+- `test/output/milestone_2.txt` *(Hasil Parse Tree Sintaksis)*
+- `test/output/milestone_3.txt` *(Hasil Analisis Semantik: Symbol Table & AST)*
+
 ### Contoh Input & Output:
 #### Input:
 ```
@@ -555,3 +583,12 @@ idx  last  lpar  psze  vsze
 | 13524119 | Nathanael Shane Bennet | Pengaplikasian node statement-list hingga node repeat-statement dan mengerjakan laporan|25 %
 |13524130|Faris Wirakusuma Triawan|Pengaplikasian node program hingga node range,inisialisasi syntax analizer dan mengerjakan laporan|25 %
 |13524144|Jonathan Harijadi|Pengaplikasian node enumerated hingga node compound-statement dan mengerjakan laporan|25%
+
+#### ***[Milestone 3]:***
+
+| NIM | Nama | Pembagian Tugas | Persentase Kontribusi |
+| :---: | :---: | :---: | :---: |
+| 13524114 | Mirza Tsabita Wafa'ana | Mengerjakan bagian AST_Tree dan mengerjakan laporan | 25% |
+| 13524119 | Nathanael Shane Bennet | Mengerjakan bagian symbol table dan mengerjakan laporan | 25% |
+| 13524130 | Faris Wirakusuma Triawan | Mengerjakan bagian symbol table dan mengerjakan laporan | 25% |
+| 13524144 | Jonathan Harijadi | Mengerjakan bagian AST_Tree dan mengerjakan laporan | 25% |
