@@ -1,7 +1,8 @@
 program ErrorTest;
 var
   a: integer;
-  a: real;
+  b: real;
+  a: string; {SUPAYA ERROR }
 begin
   a := 10;
 end.

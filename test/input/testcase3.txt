@@ -6,3 +6,4 @@ begin
   writeln('Testing quotes: it''s working');
   { Komentar di akhir program }
 end.
+

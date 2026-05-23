@@ -1,13 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-//#include <filesystem>
 #include "lexer/lexer.hpp"
 #include "syntax/parsingTree.hpp"
 #include "syntax/AST_Tree.hpp"
 #include "semantic/SymbolTable.hpp"
 #include "semantic/SemanticAnalyzer.hpp"
-
 
 using namespace std;
 
@@ -32,10 +30,6 @@ int main() {
     buffer << input_file.rdbuf();
     string code = buffer.str();
     input_file.close();
-
-    // filesystem::create_directories("test/output/milestone_1");
-    // filesystem::create_directories("test/output/milestone_2");
-    // filesystem::create_directories("test/output/milestone_3");
 
     ofstream out1("test/output/milestone_1.txt");
     if (!out1.is_open()) {
@@ -92,13 +86,28 @@ int main() {
         SymbolTable symTable;
         SemanticAnalyzer analyzer(symTable);
         analyzer.analyze(cstRoot); 
+        
+        // Penanganan Error Semantik secara Absolut
         if (analyzer.hasError()) {
             analyzer.printErrors();
             cout << "\nAnalisis semantik gagal\n";
+
+            // Tangkap dan tulis log kegagalan semantik ke output txt
+            ofstream out3("test/output/milestone_3.txt", ios::trunc);
+            if (out3.is_open()) {
+                for (const auto& err : analyzer.getErrors()) {
+                    out3 << err << "\n";
+                }
+                out3 << "\nAnalisis semantik gagal\n";
+                out3.close();
+            } else {
+                cerr << "Gagal membuka file output milestone 3 untuk penulisan error." << endl;
+            }
+
             return 1;
         }
         
-        // Fase 4: Cetak Output
+        // Fase 4: Cetak Output (Jika tidak ada error)
         symTable.printTab(); 
         string milestone3Path = "test/output/milestone_3.txt";
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
