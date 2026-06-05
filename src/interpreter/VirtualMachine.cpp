@@ -1,4 +1,5 @@
 #include <interpreter/VirtualMachine.hpp>
+#include <interpreter/StackMemory.hpp>
 #include <iostream>
 
 VirtualMachine::VirtualMachine() {
@@ -32,6 +33,7 @@ void VirtualMachine::checkMemoryBounds(int address) {
 
 void VirtualMachine::run() {
     instructionPointer = 0;
+    StackMemory vmMem;
     
     while (instructionPointer < static_cast<int>(code.size())) {
         TACInstruction instr = code[instructionPointer];
@@ -93,36 +95,85 @@ void VirtualMachine::run() {
                     stack[stackPointer] = -stack[stackPointer];
                     break;
                 case 2: // ADD
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 + val2);
+                    break;
                 case 3: // SUB
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 - val2);
+                    break;
                 case 4: // MUL
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 * val2);
+                    break;
                 case 5: // DIV
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+
+                    if (val2 == 0) throw std::runtime_error("Runtime Error: Modulus by zero.");
+                    
+                    vmMem.push(val1 / val2);
+                    break;
                 case 6: // MOD
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    
+                    if (val2 == 0) throw std::runtime_error("Runtime Error: Modulus by zero.");
+
+                    vmMem.push(val1 % val2);
+                    break;
                 case 7: // EQL
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 == val2);
+                    break;
                 case 8: // NEQ
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 != val2);
+                    break;
                 case 9: // LSS
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 < val2);
+                    break;
                 case 10: // GEQ
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 >= val2);
+                    break;
                 case 11: // GTR
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 > val2);
+                    break;
                 case 12: // LEQ
-                    checkStackUnderflow(2);
-                    val2 = stack[stackPointer--];
-                    val1 = stack[stackPointer];
-                    if (instr.arg == 2) stack[stackPointer] = val1 + val2;
-                    else if (instr.arg == 3) stack[stackPointer] = val1 - val2;
-                    else if (instr.arg == 4) stack[stackPointer] = val1 * val2;
-                    else if (instr.arg == 5) {
-                        if (val2 == 0) throw std::runtime_error("Runtime Error: Division by zero.");
-                        stack[stackPointer] = val1 / val2;
-                    }
-                    else if (instr.arg == 6) {
-                        if (val2 == 0) throw std::runtime_error("Runtime Error: Modulus by zero.");
-                        stack[stackPointer] = val1 % val2;
-                    }
-                    else if (instr.arg == 7) stack[stackPointer] = (val1 == val2);
-                    else if (instr.arg == 8) stack[stackPointer] = (val1 != val2);
-                    else if (instr.arg == 9) stack[stackPointer] = (val1 < val2);
-                    else if (instr.arg == 10) stack[stackPointer] = (val1 >= val2);
-                    else if (instr.arg == 11) stack[stackPointer] = (val1 > val2);
-                    else if (instr.arg == 12) stack[stackPointer] = (val1 <= val2);
+                    val2 = vmMem.pop();
+                    val1 = vmMem.pop();
+                    vmMem.push(val1 <= val2);
+                    // checkStackUnderflow(2);
+                    // val2 = stack[stackPointer--];
+                    // val1 = stack[stackPointer];
+                    // if (instr.arg == 2) stack[stackPointer] = val1 + val2;
+                    // else if (instr.arg == 3) stack[stackPointer] = val1 - val2;
+                    // else if (instr.arg == 4) stack[stackPointer] = val1 * val2;
+                    // else if (instr.arg == 5) {
+                    //     if (val2 == 0) throw std::runtime_error("Runtime Error: Division by zero.");
+                    //     stack[stackPointer] = val1 / val2;
+                    // }
+                    // else if (instr.arg == 6) {
+                    //     if (val2 == 0) throw std::runtime_error("Runtime Error: Modulus by zero.");
+                    //     stack[stackPointer] = val1 % val2;
+                    // }
+                    // else if (instr.arg == 7) stack[stackPointer] = (val1 == val2);
+                    // else if (instr.arg == 8) stack[stackPointer] = (val1 != val2);
+                    // else if (instr.arg == 9) stack[stackPointer] = (val1 < val2);
+                    // else if (instr.arg == 10) stack[stackPointer] = (val1 >= val2);
+                    // else if (instr.arg == 11) stack[stackPointer] = (val1 > val2);
+                    // else if (instr.arg == 12) stack[stackPointer] = (val1 <= val2);
                     break;
                 case 13:
                     checkStackUnderflow(1);
