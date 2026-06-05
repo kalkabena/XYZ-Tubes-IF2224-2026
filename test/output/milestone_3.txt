@@ -1,3 +1,44 @@
-Semantic Error: Identifier 'y' belum dideklarasikan atau tidak valid di konteks ini.
+--- SYMBOL TABLE (TAB) ---
+idx  id             obj         type     ref  nrm  lev  adr  link
+-----------------------------------------------------------------
+33   Hello          4           0       0    1    0    0    0
+34   a              2           1       0    1    0    5    0
+35   b              2           1       0    1    0    6    0
+36   i              2           1       0    1    0    7    0
+37   AddTen         5           1       0    1    0    0    0
+38   x              2           1       0    1    1    0    0
 
-Analisis semantik gagal
+--- ARRAY TABLE (ATAB) ---
+idx  xtyp   etyp   eref   low    high   elsz   size
+---------------------------------------------------
+
+--- BLOCK TABLE (BTAB) ---
+idx  last  lpar  psze  vsze
+---------------------------
+0    0     0     0     0
+1    37    0     0     3
+2    38    1     0     1
+
+--- DECORATED AST ---
+└── BlockNode
+    ├── BlockNode
+    │   ├── VarDeclNode(Type: integer)
+    │   │   ├── a
+    │   │   ├── comma
+    │   │   ├── b
+    │   │   ├── comma
+    │   │   └── i
+    │   └── SubprogramDecl(AddTen)
+    │       └── [NULL BLOCK]
+    └── BlockNode
+        └── BlockNode
+            ├── AssignNode
+            │   ├── VariableNode(a)
+            │   └── NumberNode(5)
+            ├── AssignNode
+            │   ├── VariableNode(b)
+            │   └── CallNode(func: 'AddTen')
+            │       └── VariableNode(a)
+            └── CallNode(func: 'writeln')
+                ├── StringNode('Result = ')
+                └── VariableNode(b)

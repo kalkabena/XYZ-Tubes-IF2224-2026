@@ -253,7 +253,10 @@ void SemanticAnalyzer::traverseNode(Node* node, int lev) {
                             reportError("Variabel '" + varName + "' sudah dideklarasikan pada scope ini.");
                             continue;
                         }
-                        int idx = symbolTable.addEntry(varName, OBJ_VARIABLE, resolvedType, typeRef, 1, lev, 0);
+                        int currentVsze = symbolTable.getBlockVsze(currentBlock);
+                        int memAddress = 5 + currentVsze; 
+
+                        int idx = symbolTable.addEntry(varName, OBJ_VARIABLE, resolvedType, typeRef, 1, lev, memAddress);
                         symbolTable.incrementCurrentBlockVsze(idx);
                     }
                 }
@@ -382,8 +385,6 @@ DataType SemanticAnalyzer::getExprType(ASTNode* exprNode) {
     }
 
     if (auto fieldNode = dynamic_cast<FieldAccessNode*>(exprNode)) {
-        // Implementasi sederhana: Asumsikan lookup nama record bisa memisahkan dot notation.
-        // Untuk arsitektur ini, kita coba temukan parent recordnya
         size_t dotPos = fieldNode->recordName.find('.');
         std::string baseRec = (dotPos != std::string::npos) ? fieldNode->recordName.substr(0, dotPos) : fieldNode->recordName;
         int idx = symbolTable.lookupIndex(baseRec);
