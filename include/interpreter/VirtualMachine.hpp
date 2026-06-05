@@ -7,12 +7,12 @@
 class VirtualMachine {
 private:
     static const int MAX_STACK_SIZE = 1000;
-    std::vector<TACInstruction> code; 
-    std::vector<int> stack;           
+    std::vector<TACInstruction> code;
+    std::vector<int> stack;
     
     int instructionPointer;
-    int basePointer;       
-    int stackPointer;      
+    int basePointer;
+    int stackPointer;
 
     void checkStackOverflow(int increment);
     void checkStackUnderflow(int decrement);
