@@ -1,0 +1,3 @@
+Semantic Error: Identifier 'y' belum dideklarasikan atau tidak valid di konteks ini.
+
+Analisis semantik gagal
