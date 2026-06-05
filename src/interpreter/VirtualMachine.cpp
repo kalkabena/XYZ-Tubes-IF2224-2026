@@ -86,67 +86,43 @@ void VirtualMachine::run() {
             stackPointer -= 2;
         }
         else if (instr.op == "OPR") {
+            int val1, val2;
             switch(instr.arg) {
                 case 1:
                     checkStackUnderflow(0);
                     stack[stackPointer] = -stack[stackPointer];
                     break;
-                case 2:
+                case 2: // ADD
+                case 3: // SUB
+                case 4: // MUL
+                case 5: // DIV
+                case 6: // MOD
+                case 7: // EQL
+                case 8: // NEQ
+                case 9: // LSS
+                case 10: // GEQ
+                case 11: // GTR
+                case 12: // LEQ
                     checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = stack[stackPointer] + stack[stackPointer + 1];
-                    break;
-                case 3:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = stack[stackPointer] - stack[stackPointer + 1];
-                    break;
-                case 4:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = stack[stackPointer] * stack[stackPointer + 1];
-                    break;
-                case 5:
-                    checkStackUnderflow(2);
-                    if (stack[stackPointer + 1] == 0) throw std::runtime_error("Runtime Error: Division by zero.");
-                    stackPointer--;
-                    stack[stackPointer] = stack[stackPointer] / stack[stackPointer + 1];
-                    break;
-                case 6:
-                    checkStackUnderflow(2);
-                    if (stack[stackPointer + 1] == 0) throw std::runtime_error("Runtime Error: Modulus by zero.");
-                    stackPointer--;
-                    stack[stackPointer] = stack[stackPointer] % stack[stackPointer + 1];
-                    break;
-                case 7:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = (stack[stackPointer] == stack[stackPointer + 1]);
-                    break;
-                case 8:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = (stack[stackPointer] != stack[stackPointer + 1]);
-                    break;
-                case 9:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = (stack[stackPointer] < stack[stackPointer + 1]);
-                    break;
-                case 10:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = (stack[stackPointer] >= stack[stackPointer + 1]);
-                    break;
-                case 11:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = (stack[stackPointer] > stack[stackPointer + 1]);
-                    break;
-                case 12:
-                    checkStackUnderflow(2);
-                    stackPointer--;
-                    stack[stackPointer] = (stack[stackPointer] <= stack[stackPointer + 1]);
+                    val2 = stack[stackPointer--];
+                    val1 = stack[stackPointer];
+                    if (instr.arg == 2) stack[stackPointer] = val1 + val2;
+                    else if (instr.arg == 3) stack[stackPointer] = val1 - val2;
+                    else if (instr.arg == 4) stack[stackPointer] = val1 * val2;
+                    else if (instr.arg == 5) {
+                        if (val2 == 0) throw std::runtime_error("Runtime Error: Division by zero.");
+                        stack[stackPointer] = val1 / val2;
+                    }
+                    else if (instr.arg == 6) {
+                        if (val2 == 0) throw std::runtime_error("Runtime Error: Modulus by zero.");
+                        stack[stackPointer] = val1 % val2;
+                    }
+                    else if (instr.arg == 7) stack[stackPointer] = (val1 == val2);
+                    else if (instr.arg == 8) stack[stackPointer] = (val1 != val2);
+                    else if (instr.arg == 9) stack[stackPointer] = (val1 < val2);
+                    else if (instr.arg == 10) stack[stackPointer] = (val1 >= val2);
+                    else if (instr.arg == 11) stack[stackPointer] = (val1 > val2);
+                    else if (instr.arg == 12) stack[stackPointer] = (val1 <= val2);
                     break;
                 case 13:
                     checkStackUnderflow(1);
@@ -157,6 +133,10 @@ void VirtualMachine::run() {
                     checkStackUnderflow(1);
                     std::cout << stack[stackPointer] << std::endl;
                     stackPointer--;
+                    break;
+                case 15: 
+                    checkStackOverflow(1);
+                    stack[++stackPointer] = 15;
                     break;
                 default:
                     throw std::runtime_error("Runtime Error: Unknown OPR code.");
