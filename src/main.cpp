@@ -6,6 +6,8 @@
 #include "syntax/AST_Tree.hpp"
 #include "semantic/SymbolTable.hpp"
 #include "semantic/SemanticAnalyzer.hpp"
+#include "interpreter/VirtualMachine.hpp"
+#include "icg/ICGenerator.hpp"
 
 using namespace std;
 
@@ -114,6 +116,30 @@ int main() {
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
         
         cout << "\n--- Semantic Analysis selesai. Output: " << milestone3Path << " ---\n" << endl;
+        // Fase 5: Intermediate Code Generation (ICG)
+        cout << "\n--- Intermediate Code Generation Result ---\n" << endl;
+        ICGenerator icg(symTable);
+        icg.generate(astRoot.get());
+        icg.printCode(); // Cetak ke terminal
+        
+        // Ekspor ICG ke file output Milestone 4
+        ofstream out4("test/output/milestone_4.txt");
+        if (out4.is_open()) {
+            for (const auto& instr : icg.getCode()) {
+                out4 << instr.lineNo << " " << instr.op << " " << instr.level << " " << instr.arg << "\n";
+            }
+            out4.close();
+            cout << "\n--- ICG selesai. Output: test/output/milestone_4.txt ---\n" << endl;
+        } else {
+            cerr << "Gagal membuka file output milestone 4." << endl;
+        }
+
+        // Fase 6: Eksekusi Virtual Machine
+        cout << "\n--- Virtual Machine Execution ---\n" << endl;
+        VirtualMachine vm;
+        vm.loadCode(icg.getCode());
+        vm.run();
+        cout << "\n\n--- Eksekusi Program Selesai ---\n" << endl;
 
     } catch (const exception& e) {
         cerr << "Compiler Error: " << e.what() << endl;

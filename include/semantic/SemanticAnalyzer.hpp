@@ -11,7 +11,6 @@ private:
     int currentBlock = 0;
 
     std::vector<std::string> errors;
-    // Fungsi internal untuk pemrosesan navigasi pohon dan parsing data semantik
     void traverseNode(Node* node, int lev);
     DataType resolveTypeFromNode(Node* typeNode) const;
     std::string extractRawValue(const std::string& formattedLexeme) const;
@@ -28,9 +27,6 @@ public:
     void printErrors() const;
     bool isDeclared(const std::string& name) const;
     const std::vector<std::string>& getErrors() const;
-
-    // Titik masuk utama untuk menganalisis pohon sintaksis konkrit (CST)
     void analyze(Node* cstRoot);
-    // Titik masuk untuk analisis Semantic Type Checking pada AST
     void analyzeAST(ASTNode* astRoot);
 };
