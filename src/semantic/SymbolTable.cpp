@@ -75,6 +75,13 @@ void SymbolTable::updateCurrentBlockLpar(int lparCount) {
     if (!btab.empty()) btab.back().lpar = lparCount;
 }
 
+int SymbolTable::getBlockVsze(int blockIndex) const {
+    if (blockIndex >= 0 && blockIndex < static_cast<int>(btab.size())) {
+        return btab[blockIndex].vsze;
+    }
+    return 0; 
+}
+
 int SymbolTable::buildAtabEntryDirect(DataType xtyp, DataType etyp, int eref, int low, int high, int elsz, int size) {
     AtabEntry entry = {xtyp, etyp, eref, low, high, elsz, size};
     atab.push_back(entry);

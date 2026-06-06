@@ -2,7 +2,7 @@
 #include <stdexcept>
 using namespace std;
 void AssignNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "AssignNode\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "Assign --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     
     if (targetVariable) {
@@ -19,7 +19,7 @@ void AssignNode::print(ostream& os, string prefix, bool isLast) const {
 }
 
 void CallNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "CallNode(func: '" << functionName << "')\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "CallNode(func: '" << functionName << "') --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     for (size_t i = 0; i < arguments.size(); ++i) {
         if (arguments[i]) arguments[i]->print(os, childPrefix, i == arguments.size() - 1);
@@ -28,7 +28,7 @@ void CallNode::print(ostream& os, string prefix, bool isLast) const {
 }
 
 void BinOpNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "BinOpNode(op: '" << op << "')\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "BinaryExpr: '" << op << "' --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     if (left) left->print(os, childPrefix, false);
     else os << childPrefix << "├── [NULL LEFT]\n";
@@ -37,7 +37,7 @@ void BinOpNode::print(ostream& os, string prefix, bool isLast) const {
 }
 
 void IfNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "IfNode\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "IfStatement --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     
     os << childPrefix << "├── Condition:\n";
@@ -55,47 +55,55 @@ void IfNode::print(ostream& os, string prefix, bool isLast) const {
 }
 
 void WhileNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "WhileNode\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "WhileStatement --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     
-    if (condition) condition->print(os, childPrefix + "├── ", false);
-    else os << childPrefix << "├── [NULL CONDITION]\n";
+    os << childPrefix << "├── Condition:\n";
+    if (condition) condition->print(os, childPrefix + "│   ", true);
+    else os << childPrefix << "│   └── [NULL CONDITION]\n";
     
-    if (body) body->print(os, childPrefix + "└── ", true);
-    else os << childPrefix << "└── [NULL BODY]\n";
+    os << childPrefix << "└── Body:\n";
+    if (body) body->print(os, childPrefix + "    ", true);
+    else os << childPrefix << "    └── [NULL BODY]\n";
 }
 
 void RepeatNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "RepeatNode\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "RepeatStatement --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     
-    if (body) body->print(os, childPrefix + "├── ", false);
-    else os << childPrefix << "├── [NULL BODY]\n";
+    os << childPrefix << "├── Body:\n";
+    if (body) body->print(os, childPrefix + "│   ", true);
+    else os << childPrefix << "│   └── [NULL BODY]\n";
     
-    if (condition) condition->print(os, childPrefix + "└── ", true);
-    else os << childPrefix << "└── [NULL CONDITION]\n";
+    os << childPrefix << "└── Condition:\n";
+    if (condition) condition->print(os, childPrefix + "    ", true);
+    else os << childPrefix << "    └── [NULL CONDITION]\n";
 }
 
 void ForNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "ForNode(var: " << varName << ")\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "ForStatement(var: " << varName << ") --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     
-    if (start) start->print(os, childPrefix + "├── ", false);
-    else os << childPrefix << "├── [NULL START]\n";
+    os << childPrefix << "├── Start:\n";
+    if (start) start->print(os, childPrefix + "│   ", true);
+    else os << childPrefix << "│   └── [NULL START]\n";
     
-    if (end) end->print(os, childPrefix + "├── ", false);
-    else os << childPrefix << "├── [NULL END]\n";
+    os << childPrefix << "├── End:\n";
+    if (end) end->print(os, childPrefix + "│   ", true);
+    else os << childPrefix << "│   └── [NULL END]\n";
     
-    if (body) body->print(os, childPrefix + "└── ", true);
-    else os << childPrefix << "└── [NULL BODY]\n";
+    os << childPrefix << "└── Body:\n";
+    if (body) body->print(os, childPrefix + "    ", true);
+    else os << childPrefix << "    └── [NULL BODY]\n";
 }
 
 void CaseNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "CaseNode\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "CaseStatement --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     string childPrefix = prefix + (isLast ? "    " : "│   ");
     
-    if (expression) expression->print(os, childPrefix + "├── ", branches.empty());
-    else os << childPrefix << (branches.empty() ? "└── " : "├── ") << "[NULL EXPRESSION]\n";
+    os << childPrefix << (branches.empty() ? "└── Expression:\n" : "├── Expression:\n");
+    if (expression) expression->print(os, childPrefix + (branches.empty() ? "    " : "│   "), true);
+    else os << childPrefix << (branches.empty() ? "    " : "│   ") << "└── [NULL EXPRESSION]\n";
     
     for (size_t i = 0; i < branches.size(); ++i) {
         bool lastBranch = (i == branches.size() - 1);
@@ -107,30 +115,29 @@ void CaseNode::print(ostream& os, string prefix, bool isLast) const {
 }
 
 void VarDeclNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "VarDeclNode(Type: " << type << ")\n";
     for (size_t i = 0; i < varNames.size(); ++i) {
-        os << prefix << (isLast ? "    " : "│   ") 
-           << (i == varNames.size() - 1 ? "└── " : "├── ") << varNames[i] << "\n";
+        os << prefix << (isLast && i == varNames.size() - 1 ? "└── " : "├── ") 
+           << "VarDecl: " << varNames[i] << " : " << type 
+           << " --> [Type: " << type << " | Scope: " << scopeLevel << "]\n";
     }
 }
 
 void SubprogramDeclNode::print(ostream& os, string prefix, bool isLast) const {
-    os << prefix << (isLast ? "└── " : "├── ") << "SubprogramDecl(" << name << ")\n";
+    os << prefix << (isLast ? "└── " : "├── ") << "SubprogramDecl: " << name << " --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
     if (block) block->print(os, prefix + (isLast ? "    " : "│   "), true);
     else os << prefix + (isLast ? "    " : "│   ") << "└── [NULL BLOCK]\n";
 }
 
 void FieldAccessNode::print(ostream& os, string prefix, bool isLast) const {
     os << prefix << (isLast ? "└── " : "├── ") 
-       << "FieldAccessNode(" << recordName << "." << fieldName << ")\n";
+       << "FieldAccess: " << recordName << "." << fieldName << " --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
 }
 
 void ArrayAccessNode::print(ostream& os, string prefix, bool isLast) const {
     os << prefix << (isLast ? "└── " : "├── ") 
-       << "ArrayAccessNode(array: " << arrayName << ")\n";
+       << "ArrayAccess(array: " << arrayName << ") --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
        
     string childPrefix = prefix + (isLast ? "    " : "│   ");
-    
     if (indexExpression) indexExpression->print(os, childPrefix, true); 
     else os << childPrefix << "└── [NULL INDEX]\n";
 }

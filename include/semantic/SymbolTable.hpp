@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <iostream>
+#include <bits/stdc++.h>
 #include "syntax/ASTNode.hpp"
 
 class Node;     // Forward declaration murni untuk parameter fungsi exportToFile
@@ -83,6 +81,7 @@ public:
     // API Publik Manajemen Data ATAB (Array)
     int buildAtabEntryDirect(DataType xtyp, DataType etyp, int eref, int low, int high, int elsz, int size);
 
+    int getBlockVsze(int blockIndex) const;
     // Fungsi Cetak Laporan
     void exportToFile(const std::string& filepath, Node* cstRoot, ASTNode* astRoot) const;
     void printTab() const;
