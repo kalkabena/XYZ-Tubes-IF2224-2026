@@ -1,5 +1,9 @@
 # ⚙️ ARION COMPILER
 
+![Version](https://img.shields.io/badge/Release-v0.4.1-blue)
+![Build](https://img.shields.io/badge/Build-Makefile_Ready-success)
+![Language](https://img.shields.io/badge/Language-C++17-orange)
+
 **Nama Kelompok:** Empty String
 
 ### 👥 Anggota Kelompok
@@ -13,7 +17,7 @@
 ---
 
 ## 📝 Deskripsi Program
-Program kompilator Arion dibuat menggunakan bahasa **C++**. Implementasi arsitektur kompilator ini dibagi menjadi beberapa modul utama (*Milestones*) yang mencakup seluruh tahapan kompilasi mulai dari analisis leksikal, analisis sintaksis, hingga analisis semantik dan pembuatan tabel simbol.
+Program kompilator Arion dibuat menggunakan bahasa **C++**. Arsitektur ini dibangun agar **Makefile Ready** sehingga proses *build*, kompilasi, dan *testing* dapat dilakukan secara terotomatisasi dengan satu perintah. Implementasi arsitektur kompilator ini dibagi menjadi beberapa modul utama (*Milestones*) yang mencakup seluruh *pipeline* kompilasi, mulai dari analisis leksikal, analisis sintaksis, pembentukan *Decorated AST*, generasi *Intermediate Code*, hingga eksekusi instruksi melalui *Virtual Machine*.
 
 ## 🔍 A. LEXICAL ANALYZER (Milestone 1)
 
@@ -274,6 +278,62 @@ void SymbolTable::buildFromNode(Node* cstRoot) {
 ```
 Fungsi `traverseNode` akan mendeteksi setiap pembuatan properti program dan secara otomatis mengekstraksi nama serta tipe dan mendaftarkannya ke dalam tabel dinamis terkait (TAB/ATAB/BTAB).
 
+###  ***D. INTERMEDIATE CODE GENERATOR & INTERPRETER <Milestone_4>***
+
+Milestone 4 berfokus pada tahapan pembuatan *Intermediate Code Generator* (ICG) yang menerima input berupa *Decorated Abstract Syntax Tree* (AST) dari analisis semantik, serta eksekusinya melalui *Interpreter* berbasis mesin tumpukan yang aman (*Safe Stack Machine*).
+
+### 1. Intermediate Code Generator (`ICGenerator.hpp` & `ICGGenerator.cpp`)
+Tahap pembangkitan kode antara (*Intermediate Code Generation*) diimplementasikan melalui penelusuran (*traversal*) pada *Decorated AST*. Arsitektur ICG secara komprehensif memetakan setiap *node* AST menjadi sekumpulan instruksi *Three-Address Code* (TAC) dan operasi *Stack Machine* tingkat rendah yang siap dieksekusi oleh mesin virtual.
+
+Berikut adalah cuplikan implementasi emisi instruksi pada fungsi inti ICG:
+```cpp
+int ICGenerator::emit(const string& op, int level, int arg) {
+    code.push_back({currentLine, op, level, arg});
+    return currentLine++;
+}
+
+void ICGenerator::generate(ASTNode* node) {
+    emit("INT", 0, 1000);   // Inisialisasi alokasi stack global
+    if (node) node->accept(this);
+    emit("RET", 0, 0);      // Return (akhiri eksekusi utama)
+}
+```
+
+- **`src/icg/ICGGenerator.cpp`**: Bertindak sebagai mesin inti yang menavigasi setiap struktur bahasa, mulai dari deklarasi variabel hingga struktur kontrol program (*if, while, for*), dan membangkitkan set instruksi (*opcode*) seperti `LIT`, `LOD`, `STO`, `JMP`, `OPR`, serta operasi aritmatika.
+- **`include/icg/TACInstruction.hpp`**: Menyediakan definisi struktur data (*struct*) instruksi TAC beserta instrumen *formatting* agar kode antara yang dihasilkan dapat divisualisasikan dengan terstruktur.
+
+### 2. Interpreter & Virtual Machine (`VirtualMachine.cpp`, `SafeStackMachine.cpp`, dll.)
+*Interpreter* bertanggung jawab penuh untuk memproses instruksi *opcode* yang dibangkitkan oleh ICG. Lingkungan eksekusi ini disimulasikan menggunakan paradigma *Safe Stack Machine* yang menerapkan kontrol memori ketat dan proteksi *runtime*.
+
+Berikut adalah cuplikan siklus *Fetch-Decode-Execute* pada mesin virtual:
+```cpp
+void VirtualMachine::run() {
+    instructionPointer = 0;
+    memory.reset();
+
+    while (instructionPointer < static_cast<int>(code.size())) {
+        TACInstruction instr = code[instructionPointer];
+        instructionPointer++; // Pindahkan penunjuk instruksi (PC)
+
+        if (instr.op == "LIT") {
+            memory.push(instr.arg); // Dorong nilai literal ke stack
+        }
+        else if (instr.op == "LOD") {
+            memory.push(memory.getValueAt(instr.arg)); // Muat variabel
+        }
+        else if (instr.op == "STO") {
+            int val = memory.pop();
+            memory.setValueAt(instr.arg, val); // Simpan hasil ke memori
+        }
+        // Dan eksekusi instruksi kontrol (JMP, OPR) lainnya...
+    }
+}
+```
+
+- **`src/interpreter/VirtualMachine.cpp`** & **`VirtualMachine.hpp`**: Merupakan abstraksi siklus *Fetch-Decode-Execute* (*Virtual Machine*). *VM* membaca urutan instruksi melalui manipulasi *Program Counter* (*PC*) dan mendelegasikan eksekusinya ke lapisan *Stack Machine*.
+- **`src/interpreter/SafeStackMachine.cpp`** & **`SafeStackMachine.hpp`**: Bertugas mengeksekusi langsung set instruksi arsitektur internal program (*ISA*). Modul ini bekerja bersama **`src/interpreter/StackMemory.cpp`** untuk mengelola alokasi ruang memori global dan operasional per blok *stack*.
+- **`src/interpreter/RuntimeProtection.cpp`** & **`RuntimeProtection.hpp`**: Menyediakan sub-modul keamanan eksekusi (*Runtime Protection*). Sub-modul ini memastikan program kebal terhadap kesalahan memori (*Memory Out-of-Bounds*), pembagian dengan nol (*Division by Zero*), kegagalan operasi tumpukan (*Stack Underflow*), maupun *overflow* numerik. Modul ini secara konstan dipantau kesehatannya oleh prosedur validasi internal dalam **`src/interpreter/RuntimeProtectionSelfTest.cpp`**.
+
 ## Requirements:
 * MakeFile
 
@@ -321,6 +381,8 @@ Selain dicetak di layar, program secara otomatis mengekspor/menyimpan salinan *l
 - `test/output/milestone_1.txt` *(Hasil Token Lexer)*
 - `test/output/milestone_2.txt` *(Hasil Parse Tree Sintaksis)*
 - `test/output/milestone_3.txt` *(Hasil Analisis Semantik: Symbol Table & AST)*
+- `test/output/icg_intepreter_report.txt` *(Hasil Intermediate Code & Output Interpreter)*
+- `test/output/vulnerability_report.txt` *(Hasil Runtime Protection Self Test)*
 
 ### Contoh Input & Output:
 #### Input:
@@ -565,6 +627,41 @@ idx  last  lpar  psze  vsze
 
 ```
 
+#### Output(ICG & Interpreter - Milestone 4):
+```
+--- Intermediate Code Generation Result ---
+
+0 INT 0 1000
+1 JMP 0 8
+2 INT 0 15
+3 LOD 0 0
+4 LIT 0 10
+5 OPR 0 2
+6 STO 0 0
+7 RET 0 0
+8 LIT 0 5
+9 STO 0 5
+10 LIT 0 0
+11 STO 0 6
+12 LOD 0 6
+13 OPR 0 14
+14 RET 0 0
+
+--- Runtime Protection Self Test ---
+
+Test: TC-01 Stack underflow pada OPR ADD - PASSED
+Test: TC-02 Invalid jump target - PASSED
+Test: TC-03 Memory out-of-bounds pada LOD - PASSED
+Test: TC-04 Numerical overflow pada ADD - PASSED
+Test: TC-05 Division by zero - PASSED
+Test: TC-06 Array index out-of-bounds helper - PASSED
+Test: TC-07 Program valid: y := 10 + 5; writeln(y) - PASSED
+
+--- Safe Stack Machine Execution ---
+
+0
+```
+
 ### Pembagian Tugas:
 #### ***[Milestone 1]:***
 | NIM | Nama | Pembagian Tugas |Persentase Kontribusi|
@@ -592,3 +689,12 @@ idx  last  lpar  psze  vsze
 | 13524119 | Nathanael Shane Bennet | Mengerjakan bagian symbol table dan mengerjakan laporan | 25% |
 | 13524130 | Faris Wirakusuma Triawan | Mengerjakan bagian symbol table dan mengerjakan laporan | 25% |
 | 13524144 | Jonathan Harijadi | Mengerjakan bagian AST_Tree dan mengerjakan laporan | 25% |
+
+#### ***[Milestone 4]:***
+
+| NIM | Nama | Pembagian Tugas | Persentase Kontribusi |
+| :---: | :---: | :---: | :---: |
+| 13524114 | Mirza Tsabita Wafa'ana | Mengerjakan kode bagian vulnerability testing dan mengerjakan laporan | 33% |
+| 13524119 | Nathanael Shane Bennet | - | 0% |
+| 13524130 | Faris Wirakusuma Triawan | Mengerjakan kode bagian ICG dan VirtualMachine dan mengerjakan laporan | 33% |
+| 13524144 | Jonathan Harijadi | Mengerjakan kode bagian StackMachine dan mengerjakan laporan | 33% |

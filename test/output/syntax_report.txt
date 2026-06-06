@@ -1,348 +1,57 @@
 <program>
 ├── <program-header>
 │   ├── programsy
-│   ├── ident(AdvancedCompilerTest)
+│   ├── ident(Hello)
 │   └── semicolon
 ├── <declaration-part>
-│   ├── <const-declaration>
-│   │   ├── constsy
-│   │   ├── ident(MaxItems)
-│   │   ├── eql
-│   │   ├── <constant>
-│   │   │   └── intcon(100)
-│   │   ├── semicolon
-│   │   ├── ident(PiValue)
-│   │   ├── eql
-│   │   ├── <constant>
-│   │   │   └── realcon(3.14159)
-│   │   ├── semicolon
-│   │   ├── ident(AppName)
-│   │   ├── eql
-│   │   ├── <constant>
-│   │   │   └── string('FarisCompiler')
-│   │   ├── semicolon
-│   │   ├── ident(Red)
-│   │   ├── eql
-│   │   ├── <constant>
-│   │   │   └── intcon(1)
-│   │   ├── semicolon
-│   │   ├── ident(Green)
-│   │   ├── eql
-│   │   ├── <constant>
-│   │   │   └── intcon(2)
-│   │   ├── semicolon
-│   │   ├── ident(Blue)
-│   │   ├── eql
-│   │   ├── <constant>
-│   │   │   └── intcon(3)
-│   │   └── semicolon
-│   ├── <type-declaration>
-│   │   ├── typesy
-│   │   ├── ident(TIndex)
-│   │   ├── eql
-│   │   ├── <type>
-│   │   │   └── <range>
-│   │   │       ├── <constant>
-│   │   │       │   └── intcon(1)
-│   │   │       ├── period
-│   │   │       ├── period
-│   │   │       └── <constant>
-│   │   │           └── intcon(100)
-│   │   ├── semicolon
-│   │   ├── ident(TColor)
-│   │   ├── eql
-│   │   ├── <type>
-│   │   │   └── ident(integer)
-│   │   ├── semicolon
-│   │   ├── ident(TPoint)
-│   │   ├── eql
-│   │   ├── <type>
-│   │   │   └── <record-type>
-│   │   │       ├── recordsy
-│   │   │       ├── <field-list>
-│   │   │       │   ├── <field-part>
-│   │   │       │   │   ├── <identifier-list>
-│   │   │       │   │   │   ├── ident(X)
-│   │   │       │   │   │   ├── comma
-│   │   │       │   │   │   └── ident(Y)
-│   │   │       │   │   ├── colon
-│   │   │       │   │   └── <type>
-│   │   │       │   │       └── ident(real)
-│   │   │       │   ├── semicolon
-│   │   │       │   ├── <field-part>
-│   │   │       │   │   ├── <identifier-list>
-│   │   │       │   │   │   └── ident(Color)
-│   │   │       │   │   ├── colon
-│   │   │       │   │   └── <type>
-│   │   │       │   │       └── ident(TColor)
-│   │   │       │   └── semicolon
-│   │   │       └── endsy
-│   │   ├── semicolon
-│   │   ├── ident(TPath)
-│   │   ├── eql
-│   │   ├── <type>
-│   │   │   └── <array-type>
-│   │   │       ├── arraysy
-│   │   │       ├── lbrack
-│   │   │       ├── <range>
-│   │   │       │   ├── <constant>
-│   │   │       │   │   └── intcon(1)
-│   │   │       │   ├── period
-│   │   │       │   ├── period
-│   │   │       │   └── <constant>
-│   │   │       │       └── intcon(50)
-│   │   │       ├── rbrack
-│   │   │       ├── ofsy
-│   │   │       └── <type>
-│   │   │           └── ident(TPoint)
-│   │   ├── semicolon
-│   │   ├── ident(TValues)
-│   │   ├── eql
-│   │   ├── <type>
-│   │   │   └── <array-type>
-│   │   │       ├── arraysy
-│   │   │       ├── lbrack
-│   │   │       ├── <range>
-│   │   │       │   ├── <constant>
-│   │   │       │   │   └── intcon(1)
-│   │   │       │   ├── period
-│   │   │       │   ├── period
-│   │   │       │   └── <constant>
-│   │   │       │       └── intcon(10)
-│   │   │       ├── rbrack
-│   │   │       ├── ofsy
-│   │   │       └── <type>
-│   │   │           └── ident(integer)
-│   │   └── semicolon
 │   ├── <var-declaration>
 │   │   ├── varsy
 │   │   ├── <identifier-list>
-│   │   │   └── ident(GlobalPath)
-│   │   ├── colon
-│   │   ├── <type>
-│   │   │   └── ident(TPath)
-│   │   ├── semicolon
-│   │   ├── <identifier-list>
-│   │   │   └── ident(Grid)
-│   │   ├── colon
-│   │   ├── <type>
-│   │   │   └── ident(TValues)
-│   │   ├── semicolon
-│   │   ├── <identifier-list>
-│   │   │   └── ident(CurrentColor)
-│   │   ├── colon
-│   │   ├── <type>
-│   │   │   └── ident(TColor)
-│   │   ├── semicolon
-│   │   ├── <identifier-list>
+│   │   │   ├── ident(a)
+│   │   │   ├── comma
+│   │   │   ├── ident(b)
+│   │   │   ├── comma
 │   │   │   └── ident(i)
 │   │   ├── colon
 │   │   ├── <type>
 │   │   │   └── ident(integer)
-│   │   ├── semicolon
-│   │   ├── <identifier-list>
-│   │   │   └── ident(nextIdx)
-│   │   ├── colon
-│   │   ├── <type>
-│   │   │   └── ident(integer)
-│   │   ├── semicolon
-│   │   ├── <identifier-list>
-│   │   │   └── ident(TotalDistance)
-│   │   ├── colon
-│   │   ├── <type>
-│   │   │   └── ident(real)
 │   │   └── semicolon
-│   ├── <subprogram-declaration>
-│   │   └── <procedure-declaration>
-│   │       ├── proceduresy
-│   │       ├── ident(InitGrid)
-│   │       ├── <formal-parameter-list>
-│   │       │   ├── lparent
-│   │       │   ├── <parameter-group>
-│   │       │   │   ├── <identifier-list>
-│   │       │   │   │   └── ident(StartVal)
-│   │       │   │   ├── colon
-│   │       │   │   └── ident(integer)
-│   │       │   └── rparent
-│   │       ├── semicolon
-│   │       ├── <block>
-│   │       │   ├── <declaration-part>
-│   │       │   │   └── <var-declaration>
-│   │       │   │       ├── varsy
-│   │       │   │       ├── <identifier-list>
-│   │       │   │       │   └── ident(r)
-│   │       │   │       ├── colon
-│   │       │   │       ├── <type>
-│   │       │   │       │   └── ident(integer)
-│   │       │   │       └── semicolon
-│   │       │   └── <compound-statement>
-│   │       │       ├── beginsy
-│   │       │       ├── <statement-list>
-│   │       │       │   ├── <statement>
-│   │       │       │   │   └── <for-statement>
-│   │       │       │   │       ├── forsy
-│   │       │       │   │       ├── ident(r)
-│   │       │       │   │       ├── becomes
-│   │       │       │   │       ├── <expression>
-│   │       │       │   │       │   └── <simple-expression>
-│   │       │       │   │       │       └── <term>
-│   │       │       │   │       │           └── <factor>
-│   │       │       │   │       │               └── intcon(1)
-│   │       │       │   │       ├── tosy
-│   │       │       │   │       ├── <expression>
-│   │       │       │   │       │   └── <simple-expression>
-│   │       │       │   │       │       └── <term>
-│   │       │       │   │       │           └── <factor>
-│   │       │       │   │       │               └── intcon(10)
-│   │       │       │   │       ├── dosy
-│   │       │       │   │       └── <compound-statement>
-│   │       │       │   │           ├── beginsy
-│   │       │       │   │           ├── <statement-list>
-│   │       │       │   │           │   ├── <statement>
-│   │       │       │   │           │   │   └── <assignment-statement>
-│   │       │       │   │           │   │       ├── <variable>
-│   │       │       │   │           │   │       │   ├── ident(Grid)
-│   │       │       │   │           │   │       │   └── <component-variable>
-│   │       │       │   │           │   │       │       ├── lbrack
-│   │       │       │   │           │   │       │       ├── <index-list>
-│   │       │       │   │           │   │       │       │   └── ident(r)
-│   │       │       │   │           │   │       │       └── rbrack
-│   │       │       │   │           │   │       ├── becomes
-│   │       │       │   │           │   │       └── <expression>
-│   │       │       │   │           │   │           └── <simple-expression>
-│   │       │       │   │           │   │               └── <term>
-│   │       │       │   │           │   │                   ├── <factor>
-│   │       │       │   │           │   │                   │   └── <variable>
-│   │       │       │   │           │   │                   │       └── ident(StartVal)
-│   │       │       │   │           │   │                   ├── <multiplicative-operator>
-│   │       │       │   │           │   │                   │   └── times
-│   │       │       │   │           │   │                   └── <factor>
-│   │       │       │   │           │   │                       └── <variable>
-│   │       │       │   │           │   │                           └── ident(r)
-│   │       │       │   │           │   └── semicolon
-│   │       │       │   │           └── endsy
-│   │       │       │   └── semicolon
-│   │       │       └── endsy
-│   │       └── semicolon
 │   └── <subprogram-declaration>
 │       └── <function-declaration>
 │           ├── functionsy
-│           ├── ident(CalculateDist)
+│           ├── ident(AddTen)
 │           ├── <formal-parameter-list>
 │           │   ├── lparent
 │           │   ├── <parameter-group>
 │           │   │   ├── <identifier-list>
-│           │   │   │   ├── ident(P1)
-│           │   │   │   ├── comma
-│           │   │   │   └── ident(P2)
+│           │   │   │   └── ident(x)
 │           │   │   ├── colon
-│           │   │   └── ident(TPoint)
+│           │   │   └── ident(integer)
 │           │   └── rparent
 │           ├── colon
-│           ├── ident(real)
+│           ├── ident(integer)
 │           ├── semicolon
 │           ├── <block>
 │           │   ├── <declaration-part>
-│           │   │   └── <var-declaration>
-│           │   │       ├── varsy
-│           │   │       ├── <identifier-list>
-│           │   │       │   ├── ident(dx)
-│           │   │       │   ├── comma
-│           │   │       │   └── ident(dy)
-│           │   │       ├── colon
-│           │   │       ├── <type>
-│           │   │       │   └── ident(real)
-│           │   │       └── semicolon
 │           │   └── <compound-statement>
 │           │       ├── beginsy
 │           │       ├── <statement-list>
 │           │       │   ├── <statement>
 │           │       │   │   └── <assignment-statement>
 │           │       │   │       ├── <variable>
-│           │       │   │       │   └── ident(dx)
+│           │       │   │       │   └── ident(AddTen)
 │           │       │   │       ├── becomes
 │           │       │   │       └── <expression>
 │           │       │   │           └── <simple-expression>
 │           │       │   │               ├── <term>
 │           │       │   │               │   └── <factor>
 │           │       │   │               │       └── <variable>
-│           │       │   │               │           ├── ident(P1)
-│           │       │   │               │           └── <component-variable>
-│           │       │   │               │               ├── period
-│           │       │   │               │               └── ident(X)
-│           │       │   │               ├── <additive-operator>
-│           │       │   │               │   └── minus
-│           │       │   │               └── <term>
-│           │       │   │                   └── <factor>
-│           │       │   │                       └── <variable>
-│           │       │   │                           ├── ident(P2)
-│           │       │   │                           └── <component-variable>
-│           │       │   │                               ├── period
-│           │       │   │                               └── ident(X)
-│           │       │   ├── semicolon
-│           │       │   ├── <statement>
-│           │       │   │   └── <assignment-statement>
-│           │       │   │       ├── <variable>
-│           │       │   │       │   └── ident(dy)
-│           │       │   │       ├── becomes
-│           │       │   │       └── <expression>
-│           │       │   │           └── <simple-expression>
-│           │       │   │               ├── <term>
-│           │       │   │               │   └── <factor>
-│           │       │   │               │       └── <variable>
-│           │       │   │               │           ├── ident(P1)
-│           │       │   │               │           └── <component-variable>
-│           │       │   │               │               ├── period
-│           │       │   │               │               └── ident(Y)
-│           │       │   │               ├── <additive-operator>
-│           │       │   │               │   └── minus
-│           │       │   │               └── <term>
-│           │       │   │                   └── <factor>
-│           │       │   │                       └── <variable>
-│           │       │   │                           ├── ident(P2)
-│           │       │   │                           └── <component-variable>
-│           │       │   │                               ├── period
-│           │       │   │                               └── ident(Y)
-│           │       │   ├── semicolon
-│           │       │   ├── <statement>
-│           │       │   │   └── <assignment-statement>
-│           │       │   │       ├── <variable>
-│           │       │   │       │   └── ident(CalculateDist)
-│           │       │   │       ├── becomes
-│           │       │   │       └── <expression>
-│           │       │   │           └── <simple-expression>
-│           │       │   │               ├── <term>
-│           │       │   │               │   └── <factor>
-│           │       │   │               │       ├── lparent
-│           │       │   │               │       ├── <expression>
-│           │       │   │               │       │   └── <simple-expression>
-│           │       │   │               │       │       └── <term>
-│           │       │   │               │       │           ├── <factor>
-│           │       │   │               │       │           │   └── <variable>
-│           │       │   │               │       │           │       └── ident(dx)
-│           │       │   │               │       │           ├── <multiplicative-operator>
-│           │       │   │               │       │           │   └── times
-│           │       │   │               │       │           └── <factor>
-│           │       │   │               │       │               └── <variable>
-│           │       │   │               │       │                   └── ident(dx)
-│           │       │   │               │       └── rparent
+│           │       │   │               │           └── ident(x)
 │           │       │   │               ├── <additive-operator>
 │           │       │   │               │   └── plus
 │           │       │   │               └── <term>
 │           │       │   │                   └── <factor>
-│           │       │   │                       ├── lparent
-│           │       │   │                       ├── <expression>
-│           │       │   │                       │   └── <simple-expression>
-│           │       │   │                       │       └── <term>
-│           │       │   │                       │           ├── <factor>
-│           │       │   │                       │           │   └── <variable>
-│           │       │   │                       │           │       └── ident(dy)
-│           │       │   │                       │           ├── <multiplicative-operator>
-│           │       │   │                       │           │   └── times
-│           │       │   │                       │           └── <factor>
-│           │       │   │                       │               └── <variable>
-│           │       │   │                       │                   └── ident(dy)
-│           │       │   │                       └── rparent
+│           │       │   │                       └── intcon(10)
 │           │       │   └── semicolon
 │           │       └── endsy
 │           └── semicolon
@@ -350,422 +59,55 @@
 │   ├── beginsy
 │   ├── <statement-list>
 │   │   ├── <statement>
-│   │   │   └── <for-statement>
-│   │   │       ├── forsy
-│   │   │       ├── ident(i)
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(a)
 │   │   │       ├── becomes
-│   │   │       ├── <expression>
-│   │   │       │   └── <simple-expression>
-│   │   │       │       └── <term>
-│   │   │       │           └── <factor>
-│   │   │       │               └── intcon(1)
-│   │   │       ├── tosy
-│   │   │       ├── <expression>
-│   │   │       │   └── <simple-expression>
-│   │   │       │       └── <term>
-│   │   │       │           └── <factor>
-│   │   │       │               └── intcon(50)
-│   │   │       ├── dosy
-│   │   │       └── <compound-statement>
-│   │   │           ├── beginsy
-│   │   │           ├── <statement-list>
-│   │   │           │   ├── <statement>
-│   │   │           │   │   └── <assignment-statement>
-│   │   │           │   │       ├── <variable>
-│   │   │           │   │       │   ├── ident(GlobalPath)
-│   │   │           │   │       │   ├── <component-variable>
-│   │   │           │   │       │   │   ├── lbrack
-│   │   │           │   │       │   │   ├── <index-list>
-│   │   │           │   │       │   │   │   └── ident(i)
-│   │   │           │   │       │   │   └── rbrack
-│   │   │           │   │       │   └── <component-variable>
-│   │   │           │   │       │       ├── period
-│   │   │           │   │       │       └── ident(X)
-│   │   │           │   │       ├── becomes
-│   │   │           │   │       └── <expression>
-│   │   │           │   │           └── <simple-expression>
-│   │   │           │   │               └── <term>
-│   │   │           │   │                   ├── <factor>
-│   │   │           │   │                   │   └── <variable>
-│   │   │           │   │                   │       └── ident(i)
-│   │   │           │   │                   ├── <multiplicative-operator>
-│   │   │           │   │                   │   └── times
-│   │   │           │   │                   └── <factor>
-│   │   │           │   │                       └── realcon(1.5)
-│   │   │           │   ├── semicolon
-│   │   │           │   ├── <statement>
-│   │   │           │   │   └── <assignment-statement>
-│   │   │           │   │       ├── <variable>
-│   │   │           │   │       │   ├── ident(GlobalPath)
-│   │   │           │   │       │   ├── <component-variable>
-│   │   │           │   │       │   │   ├── lbrack
-│   │   │           │   │       │   │   ├── <index-list>
-│   │   │           │   │       │   │   │   └── ident(i)
-│   │   │           │   │       │   │   └── rbrack
-│   │   │           │   │       │   └── <component-variable>
-│   │   │           │   │       │       ├── period
-│   │   │           │   │       │       └── ident(Y)
-│   │   │           │   │       ├── becomes
-│   │   │           │   │       └── <expression>
-│   │   │           │   │           └── <simple-expression>
-│   │   │           │   │               └── <term>
-│   │   │           │   │                   ├── <factor>
-│   │   │           │   │                   │   └── <variable>
-│   │   │           │   │                   │       └── ident(i)
-│   │   │           │   │                   ├── <multiplicative-operator>
-│   │   │           │   │                   │   └── times
-│   │   │           │   │                   └── <factor>
-│   │   │           │   │                       └── realcon(2.5)
-│   │   │           │   ├── semicolon
-│   │   │           │   ├── <statement>
-│   │   │           │   │   └── <if-statement>
-│   │   │           │   │       ├── ifsy
-│   │   │           │   │       ├── <expression>
-│   │   │           │   │       │   ├── <simple-expression>
-│   │   │           │   │       │   │   └── <term>
-│   │   │           │   │       │   │       └── <factor>
-│   │   │           │   │       │   │           ├── lparent
-│   │   │           │   │       │   │           ├── <expression>
-│   │   │           │   │       │   │           │   └── <simple-expression>
-│   │   │           │   │       │   │           │       └── <term>
-│   │   │           │   │       │   │           │           ├── <factor>
-│   │   │           │   │       │   │           │           │   └── <variable>
-│   │   │           │   │       │   │           │           │       └── ident(i)
-│   │   │           │   │       │   │           │           ├── <multiplicative-operator>
-│   │   │           │   │       │   │           │           │   └── imod
-│   │   │           │   │       │   │           │           └── <factor>
-│   │   │           │   │       │   │           │               └── intcon(2)
-│   │   │           │   │       │   │           └── rparent
-│   │   │           │   │       │   ├── <relational-operator>
-│   │   │           │   │       │   │   └── eql
-│   │   │           │   │       │   └── <simple-expression>
-│   │   │           │   │       │       └── <term>
-│   │   │           │   │       │           └── <factor>
-│   │   │           │   │       │               └── intcon(0)
-│   │   │           │   │       ├── thensy
-│   │   │           │   │       ├── <statement>
-│   │   │           │   │       │   └── <assignment-statement>
-│   │   │           │   │       │       ├── <variable>
-│   │   │           │   │       │       │   ├── ident(GlobalPath)
-│   │   │           │   │       │       │   ├── <component-variable>
-│   │   │           │   │       │       │   │   ├── lbrack
-│   │   │           │   │       │       │   │   ├── <index-list>
-│   │   │           │   │       │       │   │   │   └── ident(i)
-│   │   │           │   │       │       │   │   └── rbrack
-│   │   │           │   │       │       │   └── <component-variable>
-│   │   │           │   │       │       │       ├── period
-│   │   │           │   │       │       │       └── ident(Color)
-│   │   │           │   │       │       ├── becomes
-│   │   │           │   │       │       └── <expression>
-│   │   │           │   │       │           └── <simple-expression>
-│   │   │           │   │       │               └── <term>
-│   │   │           │   │       │                   └── <factor>
-│   │   │           │   │       │                       └── <variable>
-│   │   │           │   │       │                           └── ident(Red)
-│   │   │           │   │       ├── elsesy
-│   │   │           │   │       └── <statement>
-│   │   │           │   │           └── <assignment-statement>
-│   │   │           │   │               ├── <variable>
-│   │   │           │   │               │   ├── ident(GlobalPath)
-│   │   │           │   │               │   ├── <component-variable>
-│   │   │           │   │               │   │   ├── lbrack
-│   │   │           │   │               │   │   ├── <index-list>
-│   │   │           │   │               │   │   │   └── ident(i)
-│   │   │           │   │               │   │   └── rbrack
-│   │   │           │   │               │   └── <component-variable>
-│   │   │           │   │               │       ├── period
-│   │   │           │   │               │       └── ident(Color)
-│   │   │           │   │               ├── becomes
-│   │   │           │   │               └── <expression>
-│   │   │           │   │                   └── <simple-expression>
-│   │   │           │   │                       └── <term>
-│   │   │           │   │                           └── <factor>
-│   │   │           │   │                               └── <variable>
-│   │   │           │   │                                   └── ident(Blue)
-│   │   │           │   └── semicolon
-│   │   │           └── endsy
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(5)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(b)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <procedure/function-call>
+│   │   │                           ├── ident(AddTen)
+│   │   │                           ├── lparent
+│   │   │                           ├── <parameter-list>
+│   │   │                           │   └── <expression>
+│   │   │                           │       └── <simple-expression>
+│   │   │                           │           └── <term>
+│   │   │                           │               └── <factor>
+│   │   │                           │                   └── <variable>
+│   │   │                           │                       └── ident(a)
+│   │   │                           └── rparent
 │   │   ├── semicolon
 │   │   ├── <statement>
 │   │   │   └── <procedure/function-call>
-│   │   │       ├── ident(InitGrid)
+│   │   │       ├── ident(writeln)
 │   │   │       ├── lparent
 │   │   │       ├── <parameter-list>
+│   │   │       │   ├── <expression>
+│   │   │       │   │   └── <simple-expression>
+│   │   │       │   │       └── <term>
+│   │   │       │   │           └── <factor>
+│   │   │       │   │               └── string('Result = ')
+│   │   │       │   ├── comma
 │   │   │       │   └── <expression>
 │   │   │       │       └── <simple-expression>
 │   │   │       │           └── <term>
 │   │   │       │               └── <factor>
-│   │   │       │                   └── intcon(5)
+│   │   │       │                   └── <variable>
+│   │   │       │                       └── ident(b)
 │   │   │       └── rparent
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <assignment-statement>
-│   │   │       ├── <variable>
-│   │   │       │   └── ident(TotalDistance)
-│   │   │       ├── becomes
-│   │   │       └── <expression>
-│   │   │           └── <simple-expression>
-│   │   │               └── <term>
-│   │   │                   └── <factor>
-│   │   │                       └── realcon(0.0)
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <assignment-statement>
-│   │   │       ├── <variable>
-│   │   │       │   └── ident(i)
-│   │   │       ├── becomes
-│   │   │       └── <expression>
-│   │   │           └── <simple-expression>
-│   │   │               └── <term>
-│   │   │                   └── <factor>
-│   │   │                       └── intcon(1)
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <while-statement>
-│   │   │       ├── whilesy
-│   │   │       ├── <expression>
-│   │   │       │   ├── <simple-expression>
-│   │   │       │   │   └── <term>
-│   │   │       │   │       └── <factor>
-│   │   │       │   │           └── <variable>
-│   │   │       │   │               └── ident(i)
-│   │   │       │   ├── <relational-operator>
-│   │   │       │   │   └── lss
-│   │   │       │   └── <simple-expression>
-│   │   │       │       └── <term>
-│   │   │       │           └── <factor>
-│   │   │       │               └── intcon(50)
-│   │   │       ├── dosy
-│   │   │       └── <compound-statement>
-│   │   │           ├── beginsy
-│   │   │           ├── <statement-list>
-│   │   │           │   ├── <statement>
-│   │   │           │   │   └── <assignment-statement>
-│   │   │           │   │       ├── <variable>
-│   │   │           │   │       │   └── ident(nextIdx)
-│   │   │           │   │       ├── becomes
-│   │   │           │   │       └── <expression>
-│   │   │           │   │           └── <simple-expression>
-│   │   │           │   │               ├── <term>
-│   │   │           │   │               │   └── <factor>
-│   │   │           │   │               │       └── <variable>
-│   │   │           │   │               │           └── ident(i)
-│   │   │           │   │               ├── <additive-operator>
-│   │   │           │   │               │   └── plus
-│   │   │           │   │               └── <term>
-│   │   │           │   │                   └── <factor>
-│   │   │           │   │                       └── intcon(1)
-│   │   │           │   ├── semicolon
-│   │   │           │   ├── <statement>
-│   │   │           │   │   └── <assignment-statement>
-│   │   │           │   │       ├── <variable>
-│   │   │           │   │       │   └── ident(TotalDistance)
-│   │   │           │   │       ├── becomes
-│   │   │           │   │       └── <expression>
-│   │   │           │   │           └── <simple-expression>
-│   │   │           │   │               ├── <term>
-│   │   │           │   │               │   └── <factor>
-│   │   │           │   │               │       └── <variable>
-│   │   │           │   │               │           └── ident(TotalDistance)
-│   │   │           │   │               ├── <additive-operator>
-│   │   │           │   │               │   └── plus
-│   │   │           │   │               └── <term>
-│   │   │           │   │                   └── <factor>
-│   │   │           │   │                       └── <procedure/function-call>
-│   │   │           │   │                           ├── ident(CalculateDist)
-│   │   │           │   │                           ├── lparent
-│   │   │           │   │                           ├── <parameter-list>
-│   │   │           │   │                           │   ├── <expression>
-│   │   │           │   │                           │   │   └── <simple-expression>
-│   │   │           │   │                           │   │       └── <term>
-│   │   │           │   │                           │   │           └── <factor>
-│   │   │           │   │                           │   │               └── <variable>
-│   │   │           │   │                           │   │                   ├── ident(GlobalPath)
-│   │   │           │   │                           │   │                   └── <component-variable>
-│   │   │           │   │                           │   │                       ├── lbrack
-│   │   │           │   │                           │   │                       ├── <index-list>
-│   │   │           │   │                           │   │                       │   └── ident(i)
-│   │   │           │   │                           │   │                       └── rbrack
-│   │   │           │   │                           │   ├── comma
-│   │   │           │   │                           │   └── <expression>
-│   │   │           │   │                           │       └── <simple-expression>
-│   │   │           │   │                           │           └── <term>
-│   │   │           │   │                           │               └── <factor>
-│   │   │           │   │                           │                   └── <variable>
-│   │   │           │   │                           │                       ├── ident(GlobalPath)
-│   │   │           │   │                           │                       └── <component-variable>
-│   │   │           │   │                           │                           ├── lbrack
-│   │   │           │   │                           │                           ├── <index-list>
-│   │   │           │   │                           │                           │   └── ident(nextIdx)
-│   │   │           │   │                           │                           └── rbrack
-│   │   │           │   │                           └── rparent
-│   │   │           │   ├── semicolon
-│   │   │           │   ├── <statement>
-│   │   │           │   │   └── <assignment-statement>
-│   │   │           │   │       ├── <variable>
-│   │   │           │   │       │   └── ident(i)
-│   │   │           │   │       ├── becomes
-│   │   │           │   │       └── <expression>
-│   │   │           │   │           └── <simple-expression>
-│   │   │           │   │               ├── <term>
-│   │   │           │   │               │   └── <factor>
-│   │   │           │   │               │       └── <variable>
-│   │   │           │   │               │           └── ident(i)
-│   │   │           │   │               ├── <additive-operator>
-│   │   │           │   │               │   └── plus
-│   │   │           │   │               └── <term>
-│   │   │           │   │                   └── <factor>
-│   │   │           │   │                       └── intcon(1)
-│   │   │           │   └── semicolon
-│   │   │           └── endsy
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <assignment-statement>
-│   │   │       ├── <variable>
-│   │   │       │   └── ident(CurrentColor)
-│   │   │       ├── becomes
-│   │   │       └── <expression>
-│   │   │           └── <simple-expression>
-│   │   │               └── <term>
-│   │   │                   └── <factor>
-│   │   │                       └── <variable>
-│   │   │                           ├── ident(GlobalPath)
-│   │   │                           ├── <component-variable>
-│   │   │                           │   ├── lbrack
-│   │   │                           │   ├── <index-list>
-│   │   │                           │   │   └── intcon(10)
-│   │   │                           │   └── rbrack
-│   │   │                           └── <component-variable>
-│   │   │                               ├── period
-│   │   │                               └── ident(Color)
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <case-statement>
-│   │   │       ├── casesy
-│   │   │       ├── <expression>
-│   │   │       │   └── <simple-expression>
-│   │   │       │       └── <term>
-│   │   │       │           └── <factor>
-│   │   │       │               └── <variable>
-│   │   │       │                   └── ident(CurrentColor)
-│   │   │       ├── ofsy
-│   │   │       ├── <case-block>
-│   │   │       │   ├── <constant>
-│   │   │       │   │   └── ident(Red)
-│   │   │       │   ├── comma
-│   │   │       │   ├── <constant>
-│   │   │       │   │   └── ident(Blue)
-│   │   │       │   ├── colon
-│   │   │       │   ├── <statement>
-│   │   │       │   │   └── <compound-statement>
-│   │   │       │   │       ├── beginsy
-│   │   │       │   │       ├── <statement-list>
-│   │   │       │   │       │   ├── <statement>
-│   │   │       │   │       │   │   └── <assignment-statement>
-│   │   │       │   │       │   │       ├── <variable>
-│   │   │       │   │       │   │       │   └── ident(TotalDistance)
-│   │   │       │   │       │   │       ├── becomes
-│   │   │       │   │       │   │       └── <expression>
-│   │   │       │   │       │   │           └── <simple-expression>
-│   │   │       │   │       │   │               └── <term>
-│   │   │       │   │       │   │                   ├── <factor>
-│   │   │       │   │       │   │                   │   └── <variable>
-│   │   │       │   │       │   │                   │       └── ident(TotalDistance)
-│   │   │       │   │       │   │                   ├── <multiplicative-operator>
-│   │   │       │   │       │   │                   │   └── times
-│   │   │       │   │       │   │                   └── <factor>
-│   │   │       │   │       │   │                       └── <variable>
-│   │   │       │   │       │   │                           └── ident(PiValue)
-│   │   │       │   │       │   └── semicolon
-│   │   │       │   │       └── endsy
-│   │   │       │   ├── semicolon
-│   │   │       │   └── <case-block>
-│   │   │       │       ├── <constant>
-│   │   │       │       │   └── ident(Green)
-│   │   │       │       ├── colon
-│   │   │       │       ├── <statement>
-│   │   │       │       │   └── <assignment-statement>
-│   │   │       │       │       ├── <variable>
-│   │   │       │       │       │   └── ident(TotalDistance)
-│   │   │       │       │       ├── becomes
-│   │   │       │       │       └── <expression>
-│   │   │       │       │           └── <simple-expression>
-│   │   │       │       │               └── <term>
-│   │   │       │       │                   └── <factor>
-│   │   │       │       │                       └── realcon(0.0)
-│   │   │       │       └── semicolon
-│   │   │       └── endsy
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <assignment-statement>
-│   │   │       ├── <variable>
-│   │   │       │   └── ident(i)
-│   │   │       ├── becomes
-│   │   │       └── <expression>
-│   │   │           └── <simple-expression>
-│   │   │               └── <term>
-│   │   │                   └── <factor>
-│   │   │                       └── intcon(10)
-│   │   ├── semicolon
-│   │   ├── <statement>
-│   │   │   └── <repeat-statement>
-│   │   │       ├── repeatsy
-│   │   │       ├── <statement-list>
-│   │   │       │   ├── <statement>
-│   │   │       │   │   └── <assignment-statement>
-│   │   │       │   │       ├── <variable>
-│   │   │       │   │       │   ├── ident(Grid)
-│   │   │       │   │       │   └── <component-variable>
-│   │   │       │   │       │       ├── lbrack
-│   │   │       │   │       │       ├── <index-list>
-│   │   │       │   │       │       │   └── ident(i)
-│   │   │       │   │       │       └── rbrack
-│   │   │       │   │       ├── becomes
-│   │   │       │   │       └── <expression>
-│   │   │       │   │           └── <simple-expression>
-│   │   │       │   │               └── <term>
-│   │   │       │   │                   ├── <factor>
-│   │   │       │   │                   │   └── <variable>
-│   │   │       │   │                   │       ├── ident(Grid)
-│   │   │       │   │                   │       └── <component-variable>
-│   │   │       │   │                   │           ├── lbrack
-│   │   │       │   │                   │           ├── <index-list>
-│   │   │       │   │                   │           │   └── ident(i)
-│   │   │       │   │                   │           └── rbrack
-│   │   │       │   │                   ├── <multiplicative-operator>
-│   │   │       │   │                   │   └── idiv
-│   │   │       │   │                   └── <factor>
-│   │   │       │   │                       └── intcon(2)
-│   │   │       │   ├── semicolon
-│   │   │       │   ├── <statement>
-│   │   │       │   │   └── <assignment-statement>
-│   │   │       │   │       ├── <variable>
-│   │   │       │   │       │   └── ident(i)
-│   │   │       │   │       ├── becomes
-│   │   │       │   │       └── <expression>
-│   │   │       │   │           └── <simple-expression>
-│   │   │       │   │               ├── <term>
-│   │   │       │   │               │   └── <factor>
-│   │   │       │   │               │       └── <variable>
-│   │   │       │   │               │           └── ident(i)
-│   │   │       │   │               ├── <additive-operator>
-│   │   │       │   │               │   └── minus
-│   │   │       │   │               └── <term>
-│   │   │       │   │                   └── <factor>
-│   │   │       │   │                       └── intcon(1)
-│   │   │       │   └── semicolon
-│   │   │       ├── untilsy
-│   │   │       └── <expression>
-│   │   │           ├── <simple-expression>
-│   │   │           │   └── <term>
-│   │   │           │       └── <factor>
-│   │   │           │           └── <variable>
-│   │   │           │               └── ident(i)
-│   │   │           ├── <relational-operator>
-│   │   │           │   └── eql
-│   │   │           └── <simple-expression>
-│   │   │               └── <term>
-│   │   │                   └── <factor>
-│   │   │                       └── intcon(0)
 │   │   └── semicolon
 │   └── endsy
 └── period
