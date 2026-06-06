@@ -6,7 +6,6 @@
 #include "syntax/AST_Tree.hpp"
 #include "semantic/SymbolTable.hpp"
 #include "semantic/SemanticAnalyzer.hpp"
-#include "interpreter/VirtualMachine.hpp"
 #include "interpreter/SafeStackMachine.hpp"
 #include "interpreter/RuntimeProtection.hpp"
 #include "interpreter/RuntimeProtectionSelfTest.hpp"
@@ -119,6 +118,7 @@ int main() {
         symTable.exportToFile(milestone3Path, cstRoot, astRoot.get());
         
         cout << "\n--- Semantic Analysis selesai. Output: " << milestone3Path << " ---\n" << endl;
+        
         // Fase 5: Intermediate Code Generation (ICG)
         cout << "\n--- Intermediate Code Generation Result ---\n" << endl;
         ICGenerator icg(symTable);
@@ -165,6 +165,8 @@ int main() {
             else if (tac.op == "JPC") opCode = interpreter::OpCode::JPC;
             else if (tac.op == "OPR") opCode = interpreter::OpCode::OPR;
             else if (tac.op == "RET") opCode = interpreter::OpCode::RET;
+            else if (tac.op == "LODI") opCode = interpreter::OpCode::LODI; // Penambahan LODI
+            else if (tac.op == "STOI") opCode = interpreter::OpCode::STOI; // Penambahan STOI
             else throw runtime_error("Unknown OpCode: " + tac.op);
             
             safeInstructions.push_back(interpreter::Instruction(opCode, tac.level, tac.arg));

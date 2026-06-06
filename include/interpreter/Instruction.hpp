@@ -14,7 +14,10 @@ enum class OpCode {
     JMP,    // Unconditional jump
     JPC,    // Conditional jump if false
     OPR,    // Operation
-    RET     // Return / halt
+    RET,    // Return / halt
+    LODI,   // Load Indirect
+    STOI,   // Store Indirect
+    READ    // Input
 };
 
 enum OprCode {
@@ -31,7 +34,11 @@ enum OprCode {
     OPR_GTR   = 11,
     OPR_LEQ   = 12,
     OPR_WRT   = 13,
-    OPR_WRTLN = 14
+    OPR_WRTLN = 14,
+    OPR_AND   = 15, 
+    OPR_OR    = 16, 
+    OPR_NOT   = 17, 
+    OPR_READ  = 18  
 };
 
 struct Instruction {
@@ -41,6 +48,7 @@ struct Instruction {
 
     Instruction(OpCode opCode, int l = 0, int a = 0)
         : op(opCode), level(l), operand(a) {}
+
 
     std::string opName() const {
         switch (op) {
@@ -53,10 +61,12 @@ struct Instruction {
             case OpCode::JPC: return "JPC";
             case OpCode::OPR: return "OPR";
             case OpCode::RET: return "RET";
+            case OpCode::LODI: return "LODI";
+            case OpCode::STOI: return "STOI";
+            case OpCode::READ: return "READ";
         }
         return "UNKNOWN";
     }
-
     std::string toString(int line = -1) const {
         std::ostringstream oss;
         if (line >= 0) oss << line << " ";

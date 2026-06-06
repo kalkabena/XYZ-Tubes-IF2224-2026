@@ -105,8 +105,41 @@ void SafeStackMachine::run() {
                 break;
             }
 
+            case OpCode::LODI: {
+                int address = pop();
+                
+                RuntimeProtection::checkMemoryAddress(address, memory.size(), "LODI");
+                push(memory[static_cast<std::size_t>(address)]);
+                
+                ++ip;
+                break;
+            }
+
             case OpCode::RET: {
                 halted = true;
+                break;
+            }
+
+            case OpCode::READ: {
+                int inputVal;
+                if (!(std::cin >> inputVal)) {
+                    std::cin.clear();
+                    std::cin.ignore(10000, '\n');
+                    throw RuntimeProtectionError("InputError: Nilai yang dimasukkan pengguna bukan integer valid.");
+                }
+                
+                push(inputVal);
+                
+                ++ip;
+                break;
+            }
+
+            case OpCode::STOI: {
+                int address = pop(); // Top stack adalah address
+                int value = pop();   // Tumpukan sebelumnya adalah value
+                RuntimeProtection::checkMemoryAddress(address, memory.size(), "STOI");
+                memory[static_cast<std::size_t>(address)] = value;
+                ++ip;
                 break;
             }
 
