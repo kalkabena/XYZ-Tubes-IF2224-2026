@@ -269,9 +269,22 @@ unique_ptr<ASTNode> AST_Tree::buildCompoundStatement(Node* cstNode) {
 }
 
 unique_ptr<ASTNode> AST_Tree::buildFunctionDeclaration(Node* cstNode) {
+    if (!cstNode || cstNode->children.empty()) return nullptr;
+
     string name = extractVarName(cstNode->children[1].get());
-    unique_ptr<ASTNode> block = build(cstNode->children.back().get());
-    return make_unique<SubprogramDeclNode>(name, move(block));
+    Node* blockNode = nullptr;
+    for (auto& child : cstNode->children) {
+        if (child->type == BLOCK || child->type == COMPOUND_STATEMENT || child->type == DECLARATION_PART) {
+            blockNode = child.get();
+            break;
+        }
+    }
+
+    if (!blockNode && cstNode->children.size() > 1) {
+        blockNode = cstNode->children[cstNode->children.size() - 2].get();
+    }
+
+    return make_unique<SubprogramDeclNode>(name, build(blockNode));
 }
 unique_ptr<ASTNode> AST_Tree::buildProcedureDeclaration(Node* cstNode) {
     if (!cstNode || cstNode->children.empty()) return nullptr;

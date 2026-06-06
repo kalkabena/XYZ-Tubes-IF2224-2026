@@ -150,7 +150,6 @@ int main() {
         interpreter::writeVulnerabilityReport("test/output/vulnerability_report.txt");
         cout << "\nSelf test report written to test/output/vulnerability_report.txt\n" << endl;
 
-        // Fase 6: Eksekusi SafeStackMachine
         cout << "\n--- Safe Stack Machine Execution ---\n" << endl;
         
         std::vector<interpreter::Instruction> safeInstructions;
@@ -165,8 +164,8 @@ int main() {
             else if (tac.op == "JPC") opCode = interpreter::OpCode::JPC;
             else if (tac.op == "OPR") opCode = interpreter::OpCode::OPR;
             else if (tac.op == "RET") opCode = interpreter::OpCode::RET;
-            else if (tac.op == "LODI") opCode = interpreter::OpCode::LODI; // Penambahan LODI
-            else if (tac.op == "STOI") opCode = interpreter::OpCode::STOI; // Penambahan STOI
+            else if (tac.op == "LODI") opCode = interpreter::OpCode::LODI; 
+            else if (tac.op == "STOI") opCode = interpreter::OpCode::STOI; 
             else throw runtime_error("Unknown OpCode: " + tac.op);
             
             safeInstructions.push_back(interpreter::Instruction(opCode, tac.level, tac.arg));

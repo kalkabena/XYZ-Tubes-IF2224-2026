@@ -125,9 +125,28 @@ void ICGenerator::visit(WhileNode* node) {
 
 void ICGenerator::visit(CallNode* node) {
     if (node->functionName == "writeln" || node->functionName == "write") {
-        for (auto& arg : node->arguments) {
-            if (arg) arg->accept(this);
-            emit("OPR", 0, 14);
+        for (size_t i = 0; i < node->arguments.size(); ++i) {
+            auto& arg = node->arguments[i];
+            if (arg) {
+                if (dynamic_cast<StringNode*>(arg.get())) {
+                    continue; // Skip string node because VM doesn't support strings
+                }
+                arg->accept(this);
+                
+                bool isLastNonString = true;
+                for (size_t j = i + 1; j < node->arguments.size(); ++j) {
+                    if (node->arguments[j] && !dynamic_cast<StringNode*>(node->arguments[j].get())) {
+                        isLastNonString = false;
+                        break;
+                    }
+                }
+                
+                if (node->functionName == "writeln" && isLastNonString) {
+                    emit("OPR", 0, 14);
+                } else {
+                    emit("OPR", 0, 13);
+                }
+            }
         }
     } else {
         emit("LIT", 0, 0);

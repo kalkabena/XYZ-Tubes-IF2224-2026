@@ -5,12 +5,18 @@
 
 using namespace std;
 
+class ASTVisitor;
 
 class ASTNode {
 public:
     virtual ~ASTNode() = default;
-    virtual void print(std::ostream& os, std::string prefix, bool isLast) const = 0;
+    // Gunakan ASTVisitor sebagai tipe parameter agar bisa di-override oleh kelas turunan
     virtual void accept(ASTVisitor* visitor) = 0;
+    virtual void print(std::ostream& os, std::string prefix, bool isLast) const = 0;
+
+    std::string exprType = "void";
+    int scopeLevel = 0;
+    int tabIndex = -1;
 };
 
 class BlockNode : public ASTNode {
@@ -56,6 +62,7 @@ public:
         os << prefix << (isLast ? "└── " : "├── ") << "VariableNode(" << name << ")\n";
     }
 };
+
 class CallNode : public ASTNode {
 public:
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
@@ -77,6 +84,7 @@ public:
         : targetVariable(std::move(target)), value(std::move(val)) {}
     void print(std::ostream& os, std::string prefix, bool isLast) const override;
 };
+
 class BinOpNode : public ASTNode {
 public:
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
@@ -94,7 +102,7 @@ public:
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
     unique_ptr<ASTNode> condition;
     unique_ptr<ASTNode> thenBranch;
-    unique_ptr<ASTNode> elseBranch; // Bisa nullptr
+    unique_ptr<ASTNode> elseBranch;
 
     IfNode(unique_ptr<ASTNode> cond, unique_ptr<ASTNode> thenB, unique_ptr<ASTNode> elseB = nullptr)
         : condition(std::move(cond)), thenBranch(std::move(thenB)), elseBranch(std::move(elseB)) {}

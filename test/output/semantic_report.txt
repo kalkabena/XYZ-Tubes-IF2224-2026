@@ -45,103 +45,153 @@ idx  last  lpar  psze  vsze
 --- DECORATED AST ---
 └── BlockNode
     ├── BlockNode
-    │   ├── VarDeclNode(Type: TPath)
-    │   │   └── GlobalPath
-    │   ├── SubprogramDecl(InitGrid)
-    │   │   └── [NULL BLOCK]
-    │   └── SubprogramDecl(CalculateDist)
-    │       └── [NULL BLOCK]
+    │   ├── VarDecl: GlobalPath : TPath --> [Type: TPath | Scope: 0]
+    │   ├── SubprogramDecl: InitGrid --> [Type: void | Scope: 0]
+    │   │   └── BlockNode
+    │   │       ├── BlockNode
+    │   │       │   └── VarDecl: r : integer --> [Type: integer | Scope: 0]
+    │   │       └── BlockNode
+    │   │           └── BlockNode
+    │   │               └── ForStatement(var: r) --> [Type: void | Scope: 0]
+    │   │                   ├── Start:
+    │   │                   │   └── NumberNode(1)
+    │   │                   ├── End:
+    │   │                   │   └── NumberNode(10)
+    │   │                   └── Body:
+    │   │                       └── BlockNode
+    │   │                           └── BlockNode
+    │   │                               └── Assign --> [Type: void | Scope: 0]
+    │   │                                   ├── ArrayAccess(array: Grid) --> [Type: void | Scope: 0]
+    │   │                                   │   └── VariableNode(r)
+    │   │                                   └── BinaryExpr: '*' --> [Type: void | Scope: 0]
+    │   │                                       ├── VariableNode(StartVal)
+    │   │                                       └── VariableNode(r)
+    │   └── SubprogramDecl: CalculateDist --> [Type: void | Scope: 0]
+    │       └── BlockNode
+    │           ├── BlockNode
+    │           │   ├── VarDecl: dx : real --> [Type: real | Scope: 0]
+    │           │   ├── VarDecl: comma : real --> [Type: real | Scope: 0]
+    │           │   └── VarDecl: dy : real --> [Type: real | Scope: 0]
+    │           └── BlockNode
+    │               └── BlockNode
+    │                   ├── Assign --> [Type: void | Scope: 0]
+    │                   │   ├── VariableNode(dx)
+    │                   │   └── BinaryExpr: '-' --> [Type: void | Scope: 0]
+    │                   │       ├── FieldAccess: P1.X --> [Type: void | Scope: 0]
+    │                   │       └── FieldAccess: P2.X --> [Type: void | Scope: 0]
+    │                   ├── Assign --> [Type: void | Scope: 0]
+    │                   │   ├── VariableNode(dy)
+    │                   │   └── BinaryExpr: '-' --> [Type: void | Scope: 0]
+    │                   │       ├── FieldAccess: P1.Y --> [Type: void | Scope: 0]
+    │                   │       └── FieldAccess: P2.Y --> [Type: void | Scope: 0]
+    │                   └── Assign --> [Type: void | Scope: 0]
+    │                       ├── VariableNode(CalculateDist)
+    │                       └── BinaryExpr: '+' --> [Type: void | Scope: 0]
+    │                           ├── BinaryExpr: '*' --> [Type: void | Scope: 0]
+    │                           │   ├── VariableNode(dx)
+    │                           │   └── VariableNode(dx)
+    │                           └── BinaryExpr: '*' --> [Type: void | Scope: 0]
+    │                               ├── VariableNode(dy)
+    │                               └── VariableNode(dy)
     └── BlockNode
         └── BlockNode
-            ├── ForNode(var: i)
-            │   ├── ├── NumberNode(1)
-            │   ├── ├── NumberNode(50)
-            │   └── └── BlockNode
-            │   └──     └── BlockNode
-            │   └──         ├── AssignNode
-            │   └──         │   ├── FieldAccessNode(GlobalPath.X)
-            │   └──         │   └── BinOpNode(op: '*')
-            │   └──         │       ├── VariableNode(i)
-            │   └──         │       └── NumberNode(1.5)
-            │   └──         ├── AssignNode
-            │   └──         │   ├── FieldAccessNode(GlobalPath.Y)
-            │   └──         │   └── BinOpNode(op: '*')
-            │   └──         │       ├── VariableNode(i)
-            │   └──         │       └── NumberNode(2.5)
-            │   └──         └── IfNode
-            │   └──             ├── Condition:
-            │   └──             │   └── BinOpNode(op: '==')
-            │   └──             │       ├── BinOpNode(op: 'MOD')
-            │   └──             │       │   ├── VariableNode(i)
-            │   └──             │       │   └── NumberNode(2)
-            │   └──             │       └── NumberNode(0)
-            │   └──             ├── Then:
-            │   └──             │   └── AssignNode
-            │   └──             │       ├── FieldAccessNode(GlobalPath.Color)
-            │   └──             │       └── VariableNode(Red)
-            │   └──             └── Else:
-            │   └──                 └── AssignNode
-            │   └──                     ├── FieldAccessNode(GlobalPath.Color)
-            │   └──                     └── VariableNode(Blue)
-            ├── CallNode(func: 'InitGrid')
+            ├── ForStatement(var: i) --> [Type: void | Scope: 0]
+            │   ├── Start:
+            │   │   └── NumberNode(1)
+            │   ├── End:
+            │   │   └── NumberNode(50)
+            │   └── Body:
+            │       └── BlockNode
+            │           └── BlockNode
+            │               ├── Assign --> [Type: void | Scope: 0]
+            │               │   ├── FieldAccess: GlobalPath.X --> [Type: void | Scope: 0]
+            │               │   └── BinaryExpr: '*' --> [Type: void | Scope: 0]
+            │               │       ├── VariableNode(i)
+            │               │       └── NumberNode(1.5)
+            │               ├── Assign --> [Type: void | Scope: 0]
+            │               │   ├── FieldAccess: GlobalPath.Y --> [Type: void | Scope: 0]
+            │               │   └── BinaryExpr: '*' --> [Type: void | Scope: 0]
+            │               │       ├── VariableNode(i)
+            │               │       └── NumberNode(2.5)
+            │               └── IfStatement --> [Type: void | Scope: 0]
+            │                   ├── Condition:
+            │                   │   └── BinaryExpr: '==' --> [Type: void | Scope: 0]
+            │                   │       ├── BinaryExpr: 'MOD' --> [Type: void | Scope: 0]
+            │                   │       │   ├── VariableNode(i)
+            │                   │       │   └── NumberNode(2)
+            │                   │       └── NumberNode(0)
+            │                   ├── Then:
+            │                   │   └── Assign --> [Type: void | Scope: 0]
+            │                   │       ├── FieldAccess: GlobalPath.Color --> [Type: void | Scope: 0]
+            │                   │       └── VariableNode(Red)
+            │                   └── Else:
+            │                       └── Assign --> [Type: void | Scope: 0]
+            │                           ├── FieldAccess: GlobalPath.Color --> [Type: void | Scope: 0]
+            │                           └── VariableNode(Blue)
+            ├── CallNode(func: 'InitGrid') --> [Type: void | Scope: 0]
             │   └── NumberNode(5)
-            ├── AssignNode
+            ├── Assign --> [Type: void | Scope: 0]
             │   ├── VariableNode(TotalDistance)
             │   └── NumberNode(0.0)
-            ├── AssignNode
+            ├── Assign --> [Type: void | Scope: 0]
             │   ├── VariableNode(i)
             │   └── NumberNode(1)
-            ├── WhileNode
-            │   ├── ├── BinOpNode(op: '<')
-            │   ├── │   ├── VariableNode(i)
-            │   ├── │   └── NumberNode(50)
-            │   └── └── BlockNode
-            │   └──     └── BlockNode
-            │   └──         ├── AssignNode
-            │   └──         │   ├── VariableNode(nextIdx)
-            │   └──         │   └── BinOpNode(op: '+')
-            │   └──         │       ├── VariableNode(i)
-            │   └──         │       └── NumberNode(1)
-            │   └──         ├── AssignNode
-            │   └──         │   ├── VariableNode(TotalDistance)
-            │   └──         │   └── BinOpNode(op: '+')
-            │   └──         │       ├── VariableNode(TotalDistance)
-            │   └──         │       └── CallNode(func: 'CalculateDist')
-            │   └──         │           ├── ArrayAccessNode(array: GlobalPath)
-            │   └──         │           │   └── VariableNode(i)
-            │   └──         │           └── ArrayAccessNode(array: GlobalPath)
-            │   └──         │               └── VariableNode(nextIdx)
-            │   └──         └── AssignNode
-            │   └──             ├── VariableNode(i)
-            │   └──             └── BinOpNode(op: '+')
-            │   └──                 ├── VariableNode(i)
-            │   └──                 └── NumberNode(1)
-            ├── AssignNode
+            ├── WhileStatement --> [Type: void | Scope: 0]
+            │   ├── Condition:
+            │   │   └── BinaryExpr: '<' --> [Type: void | Scope: 0]
+            │   │       ├── VariableNode(i)
+            │   │       └── NumberNode(50)
+            │   └── Body:
+            │       └── BlockNode
+            │           └── BlockNode
+            │               ├── Assign --> [Type: void | Scope: 0]
+            │               │   ├── VariableNode(nextIdx)
+            │               │   └── BinaryExpr: '+' --> [Type: void | Scope: 0]
+            │               │       ├── VariableNode(i)
+            │               │       └── NumberNode(1)
+            │               ├── Assign --> [Type: void | Scope: 0]
+            │               │   ├── VariableNode(TotalDistance)
+            │               │   └── BinaryExpr: '+' --> [Type: void | Scope: 0]
+            │               │       ├── VariableNode(TotalDistance)
+            │               │       └── CallNode(func: 'CalculateDist') --> [Type: void | Scope: 0]
+            │               │           ├── ArrayAccess(array: GlobalPath) --> [Type: void | Scope: 0]
+            │               │           │   └── VariableNode(i)
+            │               │           └── ArrayAccess(array: GlobalPath) --> [Type: void | Scope: 0]
+            │               │               └── VariableNode(nextIdx)
+            │               └── Assign --> [Type: void | Scope: 0]
+            │                   ├── VariableNode(i)
+            │                   └── BinaryExpr: '+' --> [Type: void | Scope: 0]
+            │                       ├── VariableNode(i)
+            │                       └── NumberNode(1)
+            ├── Assign --> [Type: void | Scope: 0]
             │   ├── VariableNode(CurrentColor)
-            │   └── FieldAccessNode(GlobalPath.Color)
-            ├── CaseNode
-            │   ├── ├── VariableNode(CurrentColor)
+            │   └── FieldAccess: GlobalPath.Color --> [Type: void | Scope: 0]
+            ├── CaseStatement --> [Type: void | Scope: 0]
+            │   ├── Expression:
+            │   │   └── VariableNode(CurrentColor)
             │   └── Branch: Green
-            │       └── AssignNode
+            │       └── Assign --> [Type: void | Scope: 0]
             │           ├── VariableNode(TotalDistance)
             │           └── NumberNode(0.0)
-            ├── AssignNode
+            ├── Assign --> [Type: void | Scope: 0]
             │   ├── VariableNode(i)
             │   └── NumberNode(10)
-            └── RepeatNode
-                ├── ├── BlockNode
-                ├── │   ├── AssignNode
-                ├── │   │   ├── ArrayAccessNode(array: Grid)
-                ├── │   │   │   └── VariableNode(i)
-                ├── │   │   └── BinOpNode(op: '/')
-                ├── │   │       ├── ArrayAccessNode(array: Grid)
-                ├── │   │       │   └── VariableNode(i)
-                ├── │   │       └── NumberNode(2)
-                ├── │   └── AssignNode
-                ├── │       ├── VariableNode(i)
-                ├── │       └── BinOpNode(op: '-')
-                ├── │           ├── VariableNode(i)
-                ├── │           └── NumberNode(1)
-                └── └── BinOpNode(op: '==')
-                └──     ├── VariableNode(i)
-                └──     └── NumberNode(0)
+            └── RepeatStatement --> [Type: void | Scope: 0]
+                ├── Body:
+                │   └── BlockNode
+                │       ├── Assign --> [Type: void | Scope: 0]
+                │       │   ├── ArrayAccess(array: Grid) --> [Type: void | Scope: 0]
+                │       │   │   └── VariableNode(i)
+                │       │   └── BinaryExpr: '/' --> [Type: void | Scope: 0]
+                │       │       ├── ArrayAccess(array: Grid) --> [Type: void | Scope: 0]
+                │       │       │   └── VariableNode(i)
+                │       │       └── NumberNode(2)
+                │       └── Assign --> [Type: void | Scope: 0]
+                │           ├── VariableNode(i)
+                │           └── BinaryExpr: '-' --> [Type: void | Scope: 0]
+                │               ├── VariableNode(i)
+                │               └── NumberNode(1)
+                └── Condition:
+                    └── BinaryExpr: '==' --> [Type: void | Scope: 0]
+                        ├── VariableNode(i)
+                        └── NumberNode(0)
