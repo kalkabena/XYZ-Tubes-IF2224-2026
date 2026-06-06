@@ -141,3 +141,10 @@ void ArrayAccessNode::print(ostream& os, string prefix, bool isLast) const {
     if (indexExpression) indexExpression->print(os, childPrefix, true); 
     else os << childPrefix << "└── [NULL INDEX]\n";
 }
+
+void UnaryOpNode::print(ostream& os, string prefix, bool isLast) const {
+    os << prefix << (isLast ? "└── " : "├── ") << "UnaryExpr: '" << op << "' --> [Type: " << exprType << " | Scope: " << scopeLevel << "]\n";
+    string childPrefix = prefix + (isLast ? "    " : "│   ");
+    if (operand) operand->print(os, childPrefix, true);
+    else os << childPrefix << "└── [NULL OPERAND]\n";
+}

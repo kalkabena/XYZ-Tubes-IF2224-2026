@@ -356,7 +356,7 @@ DataType SemanticAnalyzer::getExprType(ASTNode* exprNode) {
         return TYPE_INTEGER;
     }
     
-    if (auto strNode = dynamic_cast<StringNode*>(exprNode)) {
+    if (dynamic_cast<StringNode*>(exprNode)) {
         return TYPE_STRING;
     }
 
@@ -370,6 +370,15 @@ DataType SemanticAnalyzer::getExprType(ASTNode* exprNode) {
         }
         reportError("Identifier '" + varNode->name + "' belum dideklarasikan atau tidak valid di konteks ini.");
         return TYPE_NONE;
+    }
+
+    if (auto unaryNode = dynamic_cast<UnaryOpNode*>(exprNode)) {
+        if (unaryNode->op == "not") return TYPE_BOOLEAN;
+        if (unaryNode->op == "-") {
+            DataType opType = getExprType(unaryNode->operand.get());
+            if (opType == TYPE_REAL) return TYPE_REAL;
+            return TYPE_INTEGER;
+        }
     }
 
     if (auto arrNode = dynamic_cast<ArrayAccessNode*>(exprNode)) {
@@ -423,8 +432,14 @@ DataType SemanticAnalyzer::getExprType(ASTNode* exprNode) {
     }
     
     if (auto callNode = dynamic_cast<CallNode*>(exprNode)) {
-        int idx = symbolTable.lookupIndex(callNode->functionName); // Diperbaiki
-        if (idx > 0) return symbolTable.getTabEntry(idx).type;
+        int idx = symbolTable.lookupIndex(callNode->functionName); 
+        if (idx > 0) {
+            DataType t = symbolTable.getTabEntry(idx).type;
+            if (t != TYPE_NONE) return t;
+        }
+        if (callNode->functionName != "writeln" && callNode->functionName != "write") {
+            return TYPE_INTEGER;
+        }
     }
 
     return TYPE_NONE;

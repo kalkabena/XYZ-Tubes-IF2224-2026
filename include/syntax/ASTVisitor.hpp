@@ -7,6 +7,7 @@ class VariableNode;
 class CallNode;
 class AssignNode;
 class BinOpNode;
+class UnaryOpNode;
 class IfNode;
 class WhileNode;
 class RepeatNode;
@@ -27,6 +28,7 @@ public:
     virtual void visit(CallNode* node) = 0;
     virtual void visit(AssignNode* node) = 0;
     virtual void visit(BinOpNode* node) = 0;
+    virtual void visit(UnaryOpNode* node) = 0;
     virtual void visit(IfNode* node) = 0;
     virtual void visit(WhileNode* node) = 0;
     virtual void visit(RepeatNode* node) = 0;

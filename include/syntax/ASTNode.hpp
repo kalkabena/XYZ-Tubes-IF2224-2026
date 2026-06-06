@@ -97,6 +97,17 @@ public:
     void print(std::ostream& os, std::string prefix, bool isLast) const override;
 };
 
+class UnaryOpNode : public ASTNode {
+public:
+    void accept(ASTVisitor* visitor) override { visitor->visit(this); }
+    string op; 
+    unique_ptr<ASTNode> operand;
+
+    UnaryOpNode(string operation, unique_ptr<ASTNode> expr)
+        : op(operation), operand(std::move(expr)) {}
+    void print(std::ostream& os, std::string prefix, bool isLast) const override;
+};
+
 class IfNode : public ASTNode {
 public:
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }

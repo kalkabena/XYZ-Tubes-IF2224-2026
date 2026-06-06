@@ -149,6 +149,19 @@ unique_ptr<ASTNode> AST_Tree::buildExpression(Node* cstNode) {
     if (cstNode->type == FACTOR) {
         Node* primary = cstNode->children[0].get();
         
+        if (primary->lexeme.find("notsy") != string::npos || primary->lexeme == "not") {
+            if (cstNode->children.size() > 1) {
+                return make_unique<UnaryOpNode>("not", buildExpression(cstNode->children[1].get()));
+            }
+        }
+        
+
+        if (primary->lexeme.find("minus") != string::npos || primary->lexeme == "-") {
+            if (cstNode->children.size() > 1) {
+                return make_unique<UnaryOpNode>("-", buildExpression(cstNode->children[1].get()));
+            }
+        }
+
         if (primary->lexeme.find("lparent") != string::npos) {
             if (cstNode->children.size() > 1) return buildExpression(cstNode->children[1].get());
         }
@@ -196,6 +209,8 @@ unique_ptr<ASTNode> AST_Tree::buildExpression(Node* cstNode) {
     }
     return nullptr;
 }
+
+
 string AST_Tree::extractVarName(Node* cstNode) {
     if (!cstNode) return "";
 

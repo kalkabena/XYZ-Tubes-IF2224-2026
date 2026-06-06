@@ -36,6 +36,7 @@ public:
     void visit(ForNode* node) override;
     void visit(CaseNode* node) override;
     void visit(VarDeclNode* /*node*/) override;
+    void visit(UnaryOpNode* node) override;
     void visit(SubprogramDeclNode* node) override;
     void visit(FieldAccessNode* node) override;
     void visit(ArrayAccessNode* node) override;

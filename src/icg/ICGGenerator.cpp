@@ -83,6 +83,20 @@ void ICGenerator::visit(AssignNode* node) {
     }
 }
 
+void ICGenerator::visit(UnaryOpNode* node) {
+    if (node->operand) {
+        node->operand->accept(this);
+    }
+
+    if (node->op == "-" || node->op == "minus") {
+        emit("OPR", 0, 1);
+    } 
+    else if (node->op == "not") {
+        emit("LIT", 0, 1);
+        emit("OPR", 0, 3); 
+    }
+}
+
 void ICGenerator::visit(BinOpNode* node) {
     if (node->left) node->left->accept(this);
     if (node->right) node->right->accept(this);
