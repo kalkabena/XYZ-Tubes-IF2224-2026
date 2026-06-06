@@ -55,7 +55,9 @@ void SafeStackMachine::run() {
                 if (instruction.operand < 0) {
                     throw RuntimeProtectionError("MemoryAllocationError: ukuran memory tidak boleh negatif");
                 }
-                memory.assign(static_cast<std::size_t>(instruction.operand), 0);
+                if (static_cast<std::size_t>(instruction.operand) > memory.size()) {
+                    memory.resize(static_cast<std::size_t>(instruction.operand), 0);
+                }
                 ++ip;
                 break;
             }

@@ -35,6 +35,7 @@ void ICGenerator::printCode() const {
 }
 
 void ICGenerator::generate(ASTNode* node) {
+    emit("INT", 0, 1000);
     if (node) node->accept(this);
 }
 
